@@ -430,3 +430,4 @@ xxhash==3.4.1
 yarl==1.11.1
 zipp==3.20.2
 zstandard @ file:///Users/cbousseau/work/recipes/ci_py311_2/zstandard_1678996192313/work
+rich==13.8.1
