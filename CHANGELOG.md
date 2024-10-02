@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Numbered category selection feature for quicker category searches
+- Updated welcome screen to inform users about the new numbered category selection feature
+
 ## [0.3.0] - 2023-05-07
 
 ### Added
