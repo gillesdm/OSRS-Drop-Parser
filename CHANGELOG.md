@@ -8,8 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Numbered category selection feature for quicker category searches
-- Updated welcome screen to inform users about the new numbered category selection feature
+- Added mwparserfromhell dependency to requirements.txt for improved parsing capabilities
+
+### Changed
+- Updated main script to handle cases where a monster has no drops
+- Improved error handling: now skips monsters with no drops and continues processing
+- Removed example categories from the category input screen
+- Added a link to the OSRS Wiki categories page (https://oldschool.runescape.wiki/w/Special:Categories) in the category input screen
+- Added a warning that not all categories will contain item drops
+
+### Removed
+- Removed numbered category selection feature
 
 ## [0.3.0] - 2023-05-07
 
