@@ -7,12 +7,15 @@ from rich.style import Style
 from rich.layout import Layout
 from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn
 from rich.prompt import Prompt
+from art import text2art
 
 def create_header():
     return Panel("OSRS Scraper by @demuynckgilles", border_style="bold green")
 
 def create_welcome_screen():
     welcome_text = Text()
+    title_art = text2art("Drops", font="block", chr_ignore=True)
+    welcome_text.append(title_art + "\n", style="bold magenta")
     welcome_text.append("Welcome to the OSRS Wiki Category Search Tool!\n\n", style="bold green")
     welcome_text.append("This tool allows you to search for monsters in a specific category and retrieve their drop tables.\n\n")
     welcome_text.append("Some example categories you can try:\n", style="cyan")
