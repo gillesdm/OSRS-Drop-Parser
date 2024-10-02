@@ -154,17 +154,10 @@ def parse_drop_template(template):
                 drops.extend(parse_drop_template(nested_template[0]))
     return drops
 
-def save_drops_to_file(monster_name, drops):
+def save_drops_to_file(category, monster_name, drops, file_path):
     """
-    Save the drop table for a given monster to a local file.
+    Save the drop table for a given monster to a single file for the category.
     """
-    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-    file_name = f"droplist_{current_time}.txt"
-    folder_path = "Droplists"
-    file_path = os.path.join(folder_path, file_name)
-    
-    os.makedirs(folder_path, exist_ok=True)
-    
     with open(file_path, "a") as file:
         file.write(f"Drop table for {monster_name}:\n")
         for drop, item_id in drops:
@@ -173,8 +166,6 @@ def save_drops_to_file(monster_name, drops):
             else:
                 file.write(f"{drop} (ID: Not found)\n")
         file.write("\n")  # Add a blank line between monsters
-    
-    print(f"Drop table for {monster_name} appended to {file_path}")
 
 def main():
     console = Console()
@@ -220,13 +211,21 @@ def main():
     layout["monster_progress"].update(Panel(progress_monsters, title="Monster Progress", border_style="cyan"))
     layout["drop_progress"].update(Panel(progress_drops, title="Drop Table Progress", border_style="yellow"))
     
+    # Create a single file for the category
+    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+    file_name = f"droplist_{category}_{current_time}.txt"
+    folder_path = "Droplists"
+    file_path = os.path.join(folder_path, file_name)
+    os.makedirs(folder_path, exist_ok=True)
+    
     with Live(layout, console=console, screen=True, refresh_per_second=4) as live:
         task_monsters = progress_monsters.add_task("[cyan]Processing monsters", total=len(monsters))
         task_drops = progress_drops.add_task("[yellow]Fetching drops", total=100)  # We'll update this later
         
         for i, monster in enumerate(monsters, 1):
             progress_drops.update(task_drops, completed=0, description=f"[yellow]Fetching drops for {monster}")
-            drops, total_drops = get_monster_drops(monster, save_to_file=True)
+            drops, total_drops = get_monster_drops(monster, save_to_file=False)
+            save_drops_to_file(category, monster, drops, file_path)
             progress_drops.update(task_drops, total=total_drops, completed=total_drops)
             
             drops_table = Table(title="Drop Table", box=DOUBLE, border_style="yellow", header_style="bold yellow")
@@ -244,6 +243,8 @@ def main():
             layout["drops"].update(Panel(drops_table, title=f"Drops for {monster}", border_style="yellow"))
             progress_monsters.update(task_monsters, advance=1)
             live.refresh()
+    
+    console.print(f"\n[green]Drop tables for all monsters in category '{category}' have been saved to {file_path}")
 
 if __name__ == "__main__":
     main()
