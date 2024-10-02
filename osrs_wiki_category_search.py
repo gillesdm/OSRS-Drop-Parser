@@ -14,9 +14,12 @@ def main():
     console = Console()
     
     # Display welcome screen
-    welcome_screen = create_welcome_screen()
-    console.print(welcome_screen)
-    console.input()
+    welcome_screen = create_welcome_screen(console)
+    with Live(welcome_screen, console=console, screen=True, refresh_per_second=4):
+        console.input()
+    
+    # Clear the screen after welcome screen
+    console.clear()
     
     # Get category input
     category = get_category_input()

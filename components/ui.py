@@ -12,7 +12,7 @@ from art import text2art
 def create_header():
     return Panel("OSRS Scraper by @demuynckgilles", border_style="bold green")
 
-def create_welcome_screen():
+def create_welcome_screen(console):
     welcome_text = Text()
     title_art = text2art("Drops", font="block", chr_ignore=True)
     welcome_text.append(title_art + "\n", style="bold magenta")
@@ -25,7 +25,7 @@ def create_welcome_screen():
     welcome_text.append("- Wilderness monsters\n\n")
     welcome_text.append("Press Enter to continue...", style="bold yellow")
     
-    return Panel(welcome_text, title="Welcome", border_style="bold blue", expand=False)
+    return Panel(welcome_text, title="Welcome", border_style="bold blue", expand=True, height=console.height)
 
 def get_category_input():
     return Prompt.ask("[bold cyan]Enter the OSRS Wiki category to search")
