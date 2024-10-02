@@ -37,19 +37,20 @@ def get_category_input(console):
     category_input_text.append("- Boss monsters\n")
     category_input_text.append("- Wilderness monsters\n\n")
 
-    category_input = Align.center(
-        Panel(
-            Prompt.ask("Category"),
-            border_style="yellow",
-            box=ROUNDED,
-            expand=False,
-            title="Enter Category",
-            title_align="center"
-        )
-    )
-
     category_panel = Panel(
-        Group(category_input_text, category_input),
+        Group(
+            category_input_text,
+            Align.center(
+                Panel(
+                    "",
+                    border_style="yellow",
+                    box=ROUNDED,
+                    expand=False,
+                    title="Enter Category",
+                    title_align="center"
+                )
+            )
+        ),
         title="Category Input",
         border_style="bold blue",
         expand=True,
@@ -57,7 +58,7 @@ def get_category_input(console):
     )
 
     console.print(category_panel)
-    return category_input.renderable.prompt.ask()
+    return Prompt.ask("Category")
 
 def create_layout():
     layout = Layout()
