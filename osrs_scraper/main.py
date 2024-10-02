@@ -57,6 +57,11 @@ def main():
         action="store_true",
         help="Sort the item IDs from small to large (only applicable with --id)"
     )
+    parser.add_argument(
+        "--banklayout",
+        action="store_true",
+        help="Create a RuneLite bank layout file"
+    )
     
     # Add a more detailed description
     parser.description = """
@@ -80,6 +85,9 @@ Use the --sort option with --id to sort the item IDs from small to large.
     """
     
     args = parser.parse_args()
+
+    if args.banklayout and not args.id:
+        parser.error("--banklayout requires --id to be set")
 
     remove_existing_logs()
     set_logging(args.logs)
@@ -153,7 +161,7 @@ Use the --sort option with --id to sort the item IDs from small to large.
         for monster in monsters:
             drops = get_monster_drops(monster)
             drops_with_ids = [(item, get_item_id(item, item_db)) for item in drops if item.lower() != "nothing"]
-            save_drops_to_file(category, monster, drops_with_ids, file_path.rsplit('.', 1)[0], args.txt, args.id, args.sort)
+            save_drops_to_file(category, monster, drops_with_ids, file_path.rsplit('.', 1)[0], args.txt, args.id, args.sort, args.banklayout)
             
             if not args.id:
                 drops_table = create_drops_table(drops_with_ids)
@@ -171,6 +179,8 @@ Use the --sort option with --id to sort the item IDs from small to large.
     
     if args.id:
         console.print(f"\n[green]Item IDs for all monsters in category '{category}' have been saved to {file_path.rsplit('.', 1)[0]}_ids.txt")
+        if args.banklayout:
+            console.print(f"[green]RuneLite bank layout for category '{category}' has been saved to {file_path.rsplit('.', 1)[0]}_banklayout.txt")
     else:
         console.print(f"\n[green]Drop tables for all monsters in category '{category}' have been saved to {file_path}")
 

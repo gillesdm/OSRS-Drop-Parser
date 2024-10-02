@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 from typing import List, Tuple, Optional
 
-def save_drops_to_file(category: str, monster_name: str, drops: List[Tuple[str, Optional[int]]], file_path: str, txt_output: bool = False, id_only: bool = False, sort_ids: bool = False) -> None:
+def save_drops_to_file(category: str, monster_name: str, drops: List[Tuple[str, Optional[int]]], file_path: str, txt_output: bool = False, id_only: bool = False, sort_ids: bool = False, banklayout: bool = False) -> None:
     """Save the drop table for a given monster to a single file for the category."""
     # Save to JSON (always)
     json_file_path = file_path.rsplit('.', 1)[0] + '.json'
@@ -43,6 +43,19 @@ def save_drops_to_file(category: str, monster_name: str, drops: List[Tuple[str, 
             if sort_ids:
                 unique_ids = sorted(unique_ids)
             id_file.write(','.join(map(str, unique_ids)) + '\n')
+
+        # Save RuneLite bank layout if banklayout is True
+        if banklayout:
+            banklayout_file_path = file_path.rsplit('.', 1)[0] + '_banklayout.txt'
+            with open(banklayout_file_path, "a") as banklayout_file:
+                unique_ids = set(item_id for _, item_id in drops if item_id is not None)
+                if sort_ids:
+                    unique_ids = sorted(unique_ids)
+                banklayout_content = f"banktaglayoutsplugin:{category.lower()},"
+                banklayout_content += ','.join(f"{id}:{i}" for i, id in enumerate(unique_ids))
+                banklayout_content += f",banktag:{category.lower()},"
+                banklayout_content += ','.join(map(str, unique_ids))
+                banklayout_file.write(banklayout_content + '\n')
 
 def create_output_file(category: str) -> str:
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
