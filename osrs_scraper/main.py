@@ -56,6 +56,9 @@ def main():
     completed_steps = [False, False, False, False, False, False]
     
     with Live(layout, console=console, screen=True, refresh_per_second=4) as live:
+        update_layout(layout, category, [], console.height, completed_steps)
+        live.refresh()
+
         completed_steps[0] = True  # Initializing
         update_layout(layout, category, [], console.height, completed_steps)
         live.refresh()
