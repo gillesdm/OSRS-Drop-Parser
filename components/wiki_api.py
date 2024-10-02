@@ -109,3 +109,9 @@ def parse_drop_template(template):
             if nested_template:
                 drops.extend(parse_drop_template(nested_template[0]))
     return drops
+
+def is_monster(entry):
+    """
+    Check if a given entry is a monster.
+    """
+    return "monster" in entry.lower()
