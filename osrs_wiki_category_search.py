@@ -179,7 +179,6 @@ def main():
     layout = Layout()
     layout.split(
         Layout(name="title", size=3),
-        Layout(name="header", size=3),
         Layout(name="main", ratio=1)
     )
     layout["main"].split_row(
@@ -188,7 +187,6 @@ def main():
     )
     
     layout["title"].update(create_header())
-    layout["header"].update(Panel(f"[bold green]Monsters in category '{category}'[/bold green]", border_style="green"))
     
     monster_panel = Panel("", title="Monster", border_style="blue")
     layout["monster"].update(monster_panel)
@@ -200,7 +198,6 @@ def main():
     
     with Live(layout, console=console, screen=True, refresh_per_second=4) as live:
         for i, monster in enumerate(monsters, 1):
-            layout["header"].update(Panel(f"[bold green]Monsters in category '{category}' - Processing {i}/{len(monsters)}[/bold green]", border_style="green"))
             layout["monster"].update(Panel(Text(monster, style="bold magenta"), title="Monster", border_style="blue"))
             
             drops = get_monster_drops(monster, save_to_file=True)
