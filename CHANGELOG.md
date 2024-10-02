@@ -7,9 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2023-04-30
+
 ### Added
+- New feature to warn users when their search is redirected to a different name
+- Improved user interface with interactive search type selection
 - New CHANGELOG.md file to track changes in the project
 - LICENSE file with MIT License
+
+### Changed
+- Enhanced error handling and user feedback for better user experience
+
+### Removed
+- Dependency on `rich-spinner` package for simpler installation and usage
 
 ## [0.1.0] - 2023-04-15
 
@@ -22,12 +32,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Option to save only item IDs as a comma-separated list
 - Create RuneLite bank layout files
 - Display progress and results in a rich, interactive console interface
-
-### Changed
-- Enhanced error handling and user feedback for better user experience
-
-### Removed
-- Dependency on `rich-spinner` package for simpler installation and usage
 
 ## [0.0.1] - 2023-04-01
 
