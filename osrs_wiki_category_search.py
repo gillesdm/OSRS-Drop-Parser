@@ -9,7 +9,7 @@ from components.file_operations import save_drops_to_file, create_output_file
 from components.ui import (
     create_header, create_layout, update_monsters_panel,
     create_progress_bars, create_drops_table, create_welcome_screen,
-    get_category_input
+    get_category_input, create_monster_search_panel
 )
 from components.logging_utils import log_parsed_data, set_logging
 
@@ -36,34 +36,14 @@ def main():
     item_db = load_item_database()
     all_entries = get_category_members(category)
     
-    monsters = []
-    progress_check = Progress(
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        TextColumn("[progress.percentage]{task.percentage:>3.0f}%")
-    )
-    
-    with progress_check as progress:
-        check_task = progress.add_task("[cyan]Checking for monsters...", total=len(all_entries))
-        for entry in all_entries:
-            if is_monster(entry):
-                monsters.append(entry)
-            progress.update(check_task, advance=1)
-    
-    if args.logs:
-        log_parsed_data(category, "filtered_monsters", monsters)
-    
-    if not monsters:
-        console.print(f"[red]No monsters found in the category '{category}'.[/red]")
-        return
-
     layout = create_layout()
     layout["title"].update(create_header())
     
     console_height = console.height
-    monsters_list = "\n".join(monsters)
     
-    monsters_panel = update_monsters_panel(monsters_list, console_height, layout)
+    layout["monster_search"].update(create_monster_search_panel())
+    
+    monsters_panel = update_monsters_panel("", console_height, layout)
     layout["monsters"].update(monsters_panel)
     
     progress_monsters, progress_drops = create_progress_bars()
@@ -74,6 +54,34 @@ def main():
     file_path = create_output_file(category)
     
     with Live(layout, console=console, screen=True, refresh_per_second=4) as live:
+        monsters = []
+        progress_check = Progress(
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TextColumn("[progress.percentage]{task.percentage:>3.0f}%")
+        )
+        
+        with progress_check:
+            check_task = progress_check.add_task("[cyan]Checking for monsters...", total=len(all_entries))
+            for entry in all_entries:
+                if is_monster(entry):
+                    monsters.append(entry)
+                progress_check.update(check_task, advance=1)
+                layout["monster_search"].update(Panel(progress_check, title="Monster Search", border_style="cyan"))
+                live.refresh()
+        
+        if args.logs:
+            log_parsed_data(category, "filtered_monsters", monsters)
+        
+        if not monsters:
+            layout["monster_search"].update(Panel(f"[red]No monsters found in the category '{category}'.[/red]", title="Monster Search", border_style="cyan"))
+            live.refresh()
+            return
+        
+        monsters_list = "\n".join(monsters)
+        monsters_panel = update_monsters_panel(monsters_list, console_height, layout)
+        layout["monsters"].update(monsters_panel)
+        
         task_monsters = progress_monsters.add_task("[cyan]Processing monsters", total=len(monsters))
         task_drops = progress_drops.add_task("[yellow]Fetching drops", total=100)  # We'll update this later
         

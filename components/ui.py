@@ -68,14 +68,29 @@ def create_layout():
         Layout(name="progress", size=5)
     )
     layout["main"].split_row(
-        Layout(name="drops", ratio=1),
+        Layout(name="left_column", ratio=1),
+        Layout(name="right_column", ratio=1)
+    )
+    layout["left_column"].split(
+        Layout(name="monster_search", size=3),
         Layout(name="monsters", ratio=1)
+    )
+    layout["right_column"].split(
+        Layout(name="drops", ratio=1)
     )
     layout["progress"].split_row(
         Layout(name="drop_progress", ratio=1),
         Layout(name="monster_progress", ratio=1)
     )
     return layout
+
+def create_monster_search_panel():
+    return Panel(
+        "Checking for monsters...",
+        title="Monster Search",
+        border_style="cyan",
+        expand=True
+    )
 
 def update_monsters_panel(monsters_list, console_height, layout):
     panel_height = console_height - layout["title"].size - layout["progress"].size - 2
