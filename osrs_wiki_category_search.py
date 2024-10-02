@@ -203,13 +203,13 @@ def main():
     progress_monsters = Progress(
         TextColumn("[progress.description]{task.description}"),
         BarColumn(),
-        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        TextColumn("[progress.completed]{task.completed:>3}/{task.total}"),
         TimeRemainingColumn()
     )
     progress_drops = Progress(
         TextColumn("[progress.description]{task.description}"),
         BarColumn(),
-        TextColumn("[progress.percentage]{task.percentage:>3.0f}%")
+        TextColumn("[progress.completed]{task.completed:>3}/{task.total}")
     )
     
     layout["monster_progress"].update(Panel(progress_monsters, title="Monster Progress", border_style="cyan"))
@@ -217,12 +217,12 @@ def main():
     
     with Live(layout, console=console, screen=True, refresh_per_second=4) as live:
         task_monsters = progress_monsters.add_task("[cyan]Processing monsters", total=len(monsters))
-        task_drops = progress_drops.add_task("[yellow]Fetching drops", total=100)
+        task_drops = progress_drops.add_task("[yellow]Fetching drops", total=len(monsters))
         
         for i, monster in enumerate(monsters, 1):
-            progress_drops.update(task_drops, completed=0, description=f"[yellow]Fetching drops for {monster}")
+            progress_drops.update(task_drops, completed=i-1, description=f"[yellow]Fetching drops for {monster}")
             drops = get_monster_drops(monster, save_to_file=True)
-            progress_drops.update(task_drops, completed=100)
+            progress_drops.update(task_drops, completed=i)
             
             drops_table = Table(title="Drop Table", box=DOUBLE, border_style="yellow", header_style="bold yellow")
             drops_table.add_column("Item", style="green")
