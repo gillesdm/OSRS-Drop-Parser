@@ -12,7 +12,7 @@ from rich.table import Table
 from rich.box import DOUBLE
 from rich.style import Style
 from rich.layout import Layout
-from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn
+from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn, Group
 
 # Load the item database
 with open('assets/item-db.json', 'r') as f:
@@ -208,12 +208,11 @@ def main():
         TextColumn("[progress.percentage]{task.percentage:>3.0f}%")
     )
     
-    progress_layout = Layout()
-    progress_layout.split_row(
-        Layout(progress_monsters),
-        Layout(progress_drops)
+    progress_group = Group(
+        Panel(progress_monsters, title="Monster Progress", border_style="cyan"),
+        Panel(progress_drops, title="Drop Table Progress", border_style="yellow")
     )
-    layout["progress"].update(progress_layout)
+    layout["progress"].update(Panel(progress_group, title="Progress", border_style="green"))
     
     with Live(layout, console=console, screen=True, refresh_per_second=4) as live:
         task_monsters = progress_monsters.add_task("[cyan]Processing monsters", total=len(monsters))
