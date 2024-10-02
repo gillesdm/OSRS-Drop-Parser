@@ -9,6 +9,7 @@ from rich.prompt import Prompt
 from rich.console import Group
 from rich.padding import Padding
 from rich.live import Live
+from rich.spinner import Spinner
 from art import text2art
 from prompt_toolkit import prompt
 from prompt_toolkit.shortcuts import PromptSession
@@ -95,10 +96,8 @@ def get_input(console: Console, input_type: str) -> str:
     redirected_name = check_redirect(user_input)
     if redirected_name and redirected_name.lower() != user_input.lower():
         warning_panel = create_warning_panel(user_input, redirected_name)
-        with Live(warning_panel, console=console, refresh_per_second=4) as live:
-            for _ in range(3):  # Display for about 3 seconds
-                live.update(warning_panel)
-                console.input()  # Wait for user input to continue
+        with Live(warning_panel, console=console, refresh_per_second=10) as live:
+            console.input()  # Wait for user input to continue
         return redirected_name
     
     return user_input
@@ -110,17 +109,22 @@ def check_redirect(name: str) -> str:
     return name
 
 def create_warning_panel(original_name: str, redirected_name: str) -> Panel:
+    spinner = Spinner("dots", style="yellow")
     warning_text = Text()
+    warning_text.append(spinner, style="yellow")
+    warning_text.append(" Search redirected\n\n", style="bold yellow")
     warning_text.append(f"Your search for ", style="yellow")
-    warning_text.append(f"'{original_name}' ", style="bold yellow")
+    warning_text.append(f"'{original_name}' ", style="bold white")
     warning_text.append(f"was redirected to ", style="yellow")
-    warning_text.append(f"'{redirected_name}'", style="bold yellow")
+    warning_text.append(f"'{redirected_name}'", style="bold white")
+    warning_text.append("\n\nPress any key to continue...", style="italic cyan")
     
     return Panel(
         warning_text,
-        title="Search Redirected",
-        border_style="bold yellow",
-        expand=False
+        title="[bold yellow]Search Redirected",
+        border_style="yellow",
+        expand=False,
+        padding=(1, 1)
     )
 
 def create_drops_table(drops):
