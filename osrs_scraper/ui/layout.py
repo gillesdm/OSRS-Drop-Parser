@@ -34,13 +34,16 @@ def create_header() -> Panel:
 
 def create_steps_panel(completed_steps: list[bool]) -> Panel:
     steps = [
-        "1. Looking for monsters",
-        "2. Fetching drops",
-        "3. Saving data"
+        "1. Initializing",
+        "2. Fetching category members",
+        "3. Filtering monsters",
+        "4. Fetching drop tables",
+        "5. Saving data",
+        "6. Finalizing"
     ]
     step_renderable = "\n".join([
-        f"[{'green' if completed else 'dim'}]{step}[/]"
-        for step, completed in zip(steps, completed_steps)
+        f"[{'green' if completed else 'yellow' if i == completed_steps.index(False) else 'dim'}]{step}[/]"
+        for i, (step, completed) in enumerate(zip(steps, completed_steps))
     ])
     return Panel(step_renderable, title="Progress", border_style="cyan", expand=True)
 

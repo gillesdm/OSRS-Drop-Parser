@@ -53,12 +53,21 @@ def main():
     
     file_path = create_output_file(category)
     
-    completed_steps = [False, False, False]
+    completed_steps = [False, False, False, False, False, False]
     
     with Live(layout, console=console, screen=True, refresh_per_second=4) as live:
+        completed_steps[0] = True  # Initializing
+        update_layout(layout, category, [], console.height, completed_steps)
+        live.refresh()
+
+        all_entries = get_category_members(category)
+        completed_steps[1] = True  # Fetching category members
+        update_layout(layout, category, [], console.height, completed_steps)
+        live.refresh()
+
         monster_progress = Progress()
         drop_progress = Progress()
-        monster_task = monster_progress.add_task("[cyan]Checking monsters...", total=len(all_entries))
+        monster_task = monster_progress.add_task("[cyan]Filtering monsters...", total=len(all_entries))
         
         monsters = []
         for entry in all_entries:
@@ -68,7 +77,7 @@ def main():
             update_layout(layout, category, monsters, console.height, completed_steps, progress_bars=(monster_progress, drop_progress))
             live.refresh()
         
-        completed_steps[0] = True
+        completed_steps[2] = True  # Filtering monsters
         update_layout(layout, category, monsters, console.height, completed_steps, progress_bars=(monster_progress, drop_progress))
         live.refresh()
         
@@ -82,18 +91,25 @@ def main():
         
         drop_task = drop_progress.add_task("[yellow]Fetching drops...", total=len(monsters))
         
+        completed_steps[3] = True  # Fetching drop tables
+        update_layout(layout, category, monsters, console.height, completed_steps, progress_bars=(monster_progress, drop_progress))
+        live.refresh()
+
         for monster in monsters:
             drops = get_monster_drops(monster)
             drops_with_ids = [(item, get_item_id(item, item_db)) for item in drops if item.lower() != "nothing"]
             save_drops_to_file(category, monster, drops_with_ids, file_path)
             
             drops_table = create_drops_table(drops_with_ids)
-            completed_steps[1] = True
             update_layout(layout, category, monsters, console.height, completed_steps, monster, drops_table, progress_bars=(monster_progress, drop_progress))
             drop_progress.update(drop_task, advance=1)
             live.refresh()
         
-        completed_steps[2] = True
+        completed_steps[4] = True  # Saving data
+        update_layout(layout, category, monsters, console.height, completed_steps, progress_bars=(monster_progress, drop_progress))
+        live.refresh()
+
+        completed_steps[5] = True  # Finalizing
         update_layout(layout, category, monsters, console.height, completed_steps, progress_bars=(monster_progress, drop_progress))
         live.refresh()
     
