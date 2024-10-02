@@ -184,9 +184,10 @@ Use the --sort option with --id to sort the item IDs from small to large.
                 for monster in monsters:
                     drops, redirected_name = get_monster_drops(monster)
                     if not drops:
-                        console.print(f"[bold red]Error: Monster '{monster}' not found or has no drops.[/bold red]")
-                        monster_not_found = True
-                        break
+                        console.print(f"[bold yellow]Warning: Monster '{monster}' not found or has no drops. Skipping...[/bold yellow]")
+                        drop_progress.update(drop_task, advance=1)
+                        live.refresh()
+                        continue
                     
                     # Use redirected_name if available, otherwise use the original monster name
                     monster_name = redirected_name or monster
@@ -212,10 +213,6 @@ Use the --sort option with --id to sort the item IDs from small to large.
                         update_layout(layout, search_input, monsters, console.height, completed_steps, monster_name, drops_table, progress_bars=(monster_progress, drop_progress))
                     drop_progress.update(drop_task, advance=1)
                     live.refresh()
-                
-                if monster_not_found:
-                    search_input = get_input(console, search_type)
-                    continue
                 
                 break  # Exit the loop if everything was successful
 
