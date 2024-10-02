@@ -181,11 +181,15 @@ def main():
     layout.split(
         Layout(name="title", size=3),
         Layout(name="main", ratio=1),
-        Layout(name="progress", size=3)
+        Layout(name="progress", size=5)
     )
     layout["main"].split_row(
         Layout(name="drops", ratio=1),
         Layout(name="monsters", ratio=1)
+    )
+    layout["progress"].split_row(
+        Layout(name="monster_progress", ratio=1),
+        Layout(name="drop_progress", ratio=1)
     )
     
     layout["title"].update(create_header())
@@ -208,17 +212,15 @@ def main():
         TextColumn("[progress.percentage]{task.percentage:>3.0f}%")
     )
     
-    progress_group = Group(
-        Panel(progress_monsters, title="Monster Progress", border_style="cyan"),
-        Panel(progress_drops, title="Drop Table Progress", border_style="yellow")
-    )
-    layout["progress"].update(Panel(progress_group, title="Progress", border_style="green"))
+    layout["monster_progress"].update(Panel(progress_monsters, title="Monster Progress", border_style="cyan"))
+    layout["drop_progress"].update(Panel(progress_drops, title="Drop Table Progress", border_style="yellow"))
     
     with Live(layout, console=console, screen=True, refresh_per_second=4) as live:
         task_monsters = progress_monsters.add_task("[cyan]Processing monsters", total=len(monsters))
+        task_drops = progress_drops.add_task("[yellow]Fetching drops", total=100)
         
         for i, monster in enumerate(monsters, 1):
-            task_drops = progress_drops.add_task(f"[yellow]Fetching drops for {monster}", total=100)
+            progress_drops.update(task_drops, completed=0, description=f"[yellow]Fetching drops for {monster}")
             drops = get_monster_drops(monster, save_to_file=True)
             progress_drops.update(task_drops, completed=100)
             
