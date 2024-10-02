@@ -192,6 +192,8 @@ def main():
     
     monsters_table = Table(title="Monsters", box=DOUBLE, border_style="blue", header_style="bold blue")
     monsters_table.add_column("Monster", style="magenta")
+    for monster in monsters:
+        monsters_table.add_row(monster)
     layout["monsters"].update(Panel(monsters_table, title="Monsters", border_style="blue"))
     
     progress_monsters = Progress(
@@ -217,9 +219,6 @@ def main():
         task_monsters = progress_monsters.add_task("[cyan]Processing monsters", total=len(monsters))
         
         for i, monster in enumerate(monsters, 1):
-            monsters_table.add_row(monster)
-            layout["monsters"].update(Panel(monsters_table, title="Monsters", border_style="blue"))
-            
             task_drops = progress_drops.add_task(f"[yellow]Fetching drops for {monster}", total=100)
             drops = get_monster_drops(monster, save_to_file=True)
             progress_drops.update(task_drops, completed=100)
