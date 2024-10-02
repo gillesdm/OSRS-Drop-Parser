@@ -21,6 +21,8 @@ from osrs_scraper.ui.components import (
     get_search_type,
     get_input,
     create_drops_table,
+    create_summary_message,
+    ask_for_another_search,
 )
 from osrs_scraper.ui.layout import (
     create_layout,
@@ -94,14 +96,14 @@ Use the --sort option with --id to sort the item IDs from small to large.
     set_logging(args.logs)
     console = Console()
     
-    # Display welcome screen
-    welcome_screen = create_welcome_screen(console)
-    with Live(welcome_screen, console=console, screen=True, refresh_per_second=4):
-        console.input()
-    
-    console.clear()
-    
     while True:
+        # Display welcome screen
+        welcome_screen = create_welcome_screen(console)
+        with Live(welcome_screen, console=console, screen=True, refresh_per_second=4):
+            console.input()
+        
+        console.clear()
+        
         search_type = get_search_type()
         if search_type is None:
             console.print("[bold red]Search cancelled. Exiting...[/bold red]")
@@ -178,12 +180,14 @@ Use the --sort option with --id to sort the item IDs from small to large.
 
                 all_unique_ids = set()
                 monster_not_found = False
+                total_items = 0
                 for monster in monsters:
                     drops, redirected_name = get_monster_drops(monster)
                     if not drops:
-                        console.print(f"[bold red]Error: Monster '{monster}' not found or has no drops.[/bold red]")
-                        monster_not_found = True
-                        break
+                        console.print(f"[bold yellow]Warning: Monster '{monster}' not found or has no drops. Skipping...[/bold yellow]")
+                        drop_progress.update(drop_task, advance=1)
+                        live.refresh()
+                        continue
                     
                     # Use redirected_name if available, otherwise use the original monster name
                     monster_name = redirected_name or monster
@@ -192,7 +196,12 @@ Use the --sort option with --id to sort the item IDs from small to large.
                     if redirected_name:
                         file_path = file_path.replace(search_input, redirected_name)
                     
+                    # Update search_input if redirected
+                    if search_type == "monster" and redirected_name:
+                        search_input = redirected_name
+                    
                     drops_with_ids = [(item, get_item_id(item, item_db)) for item in drops if item.lower() != "nothing"]
+                    total_items += len(drops_with_ids)
                     if args.banklayout:
                         monster_unique_ids = {get_item_id(item, item_db) for item, _ in drops_with_ids if get_item_id(item, item_db) is not None}
                         all_unique_ids.update(monster_unique_ids)
@@ -204,10 +213,6 @@ Use the --sort option with --id to sort the item IDs from small to large.
                         update_layout(layout, search_input, monsters, console.height, completed_steps, monster_name, drops_table, progress_bars=(monster_progress, drop_progress))
                     drop_progress.update(drop_task, advance=1)
                     live.refresh()
-                
-                if monster_not_found:
-                    search_input = get_input(console, search_type)
-                    continue
                 
                 break  # Exit the loop if everything was successful
 
@@ -222,14 +227,13 @@ Use the --sort option with --id to sort the item IDs from small to large.
             update_layout(layout, search_input, monsters, console.height, completed_steps, progress_bars=(monster_progress, drop_progress))
             live.refresh()
 
-        break  # Exit the loop if everything was successful
-    
-    if args.id and not args.banklayout:
-        console.print(f"\n[green]Item IDs for {'all monsters in category' if search_type == 'category' else 'monster'} '{search_input}' have been saved to {file_path.rsplit('.', 1)[0]}_ids.txt")
-    if args.banklayout:
-        console.print(f"[green]RuneLite bank layout for {'category' if search_type == 'category' else 'monster'} '{search_input}' has been saved to {file_path.rsplit('.', 1)[0]}_banklayout.txt")
-    if not args.id and not args.banklayout:
-        console.print(f"\n[green]Drop tables for {'all monsters in category' if search_type == 'category' else 'monster'} '{search_input}' have been saved to {file_path}")
+        # Display summary message
+        summary = create_summary_message(search_type, search_input, monsters, total_items, file_path, args)
+        console.print(summary)
+
+        # Ask if the user wants to do another search
+        if not ask_for_another_search(console):
+            break
 
 if __name__ == "__main__":
     main()
