@@ -112,7 +112,7 @@ def main():
         for monster in monsters:
             drops = get_monster_drops(monster)
             drops_with_ids = [(item, get_item_id(item, item_db)) for item in drops if item.lower() != "nothing"]
-            save_drops_to_file(category, monster, drops_with_ids, file_path, args.txt)
+            save_drops_to_file(category, monster, drops_with_ids, file_path.rsplit('.', 1)[0], args.txt)
             
             drops_table = create_drops_table(drops_with_ids)
             update_layout(layout, category, monsters, console.height, completed_steps, monster, drops_table, progress_bars=(monster_progress, drop_progress))
