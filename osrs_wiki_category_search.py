@@ -8,6 +8,9 @@ from rich.console import Console
 from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
 from rich.panel import Panel
 from rich.text import Text
+from rich.table import Table
+from rich.box import DOUBLE
+from rich.style import Style
 
 # Load the item database
 with open('assets/item-db.json', 'r') as f:
@@ -169,7 +172,7 @@ def main():
     category = console.input("[bold cyan]Enter the OSRS Wiki category to search (e.g., 'Monsters'): [/bold cyan]")
     monsters = get_category_members(category)
     
-    console.print(Panel(f"[bold green]Monsters in category '{category}'[/bold green]"))
+    console.print(Panel(f"[bold green]Monsters in category '{category}'[/bold green]", border_style="green"))
     
     with Progress(
         TextColumn("[progress.description]{task.description}"),
@@ -186,29 +189,24 @@ def main():
             monster_panel = Panel(
                 Text(monster, style="bold magenta"),
                 title="Monster",
-                border_style="blue"
+                border_style="blue",
+                expand=False
             )
             console.print(monster_panel)
             
             if drops:
-                drops_text = Text()
-                drops_text.append(f"Drops ({len(drops)} items):\n", style="bold yellow")
-                for drop, item_id in drops:
-                    if item_id is not None:
-                        drops_text.append(f"  - {drop} ", style="green")
-                        drops_text.append(f"(ID: {item_id})\n", style="cyan")
-                    else:
-                        drops_text.append(f"  - {drop} ", style="green")
-                        drops_text.append("(ID: Not found)\n", style="red")
+                table = Table(title="Drop Table", box=DOUBLE, border_style="yellow", header_style="bold yellow")
+                table.add_column("Item", style="green")
+                table.add_column("ID", style="cyan")
                 
-                drops_panel = Panel(
-                    drops_text,
-                    title="Drop Table",
-                    border_style="yellow"
-                )
-                console.print(drops_panel)
+                for drop, item_id in drops:
+                    id_str = str(item_id) if item_id is not None else "Not found"
+                    id_style = "cyan" if item_id is not None else "red"
+                    table.add_row(drop, id_str, style=Style(color="green", dim=(item_id is None)))
+                
+                console.print(table)
             else:
-                console.print("[bold red]No drops found or unable to fetch drop table.[/bold red]")
+                console.print(Panel("[bold red]No drops found or unable to fetch drop table.[/bold red]", border_style="red"))
             
             console.print()
 
