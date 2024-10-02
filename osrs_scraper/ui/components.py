@@ -138,3 +138,73 @@ def create_drops_table(drops):
         drops_table.add_row("No drops found", "N/A", style="red")
     
     return drops_table
+
+def create_summary_message(search_type: str, search_input: str, monsters: list, total_items: int, file_path: str, args) -> Panel:
+    summary_text = Text()
+    summary_text.append("Search Complete!\n\n", style="bold green")
+    
+    if search_type == "category":
+        summary_text.append(f"Category: ", style="cyan")
+        summary_text.append(f"{search_input}\n", style="bold white")
+        summary_text.append(f"Monsters scanned: ", style="cyan")
+        summary_text.append(f"{len(monsters)}\n", style="bold white")
+    else:
+        summary_text.append(f"Monster: ", style="cyan")
+        summary_text.append(f"{search_input}\n", style="bold white")
+    
+    summary_text.append(f"Total items found: ", style="cyan")
+    summary_text.append(f"{total_items}\n\n", style="bold white")
+    
+    summary_text.append("Files saved:\n", style="yellow")
+    if args.id and not args.banklayout:
+        summary_text.append(f"- Item IDs: ", style="green")
+        summary_text.append(f"{file_path.rsplit('.', 1)[0]}_ids.txt\n", style="italic white")
+    if args.banklayout:
+        summary_text.append(f"- RuneLite bank layout: ", style="green")
+        summary_text.append(f"{file_path.rsplit('.', 1)[0]}_banklayout.txt\n", style="italic white")
+    if not args.id and not args.banklayout:
+        summary_text.append(f"- Drop tables: ", style="green")
+        summary_text.append(f"{file_path}\n", style="italic white")
+    
+    return Panel(summary_text, title="Summary", border_style="bold blue", expand=False, padding=(1, 1))
+
+def ask_for_another_search(console: Console) -> bool:
+    options = ["Yes, do another search", "No, exit the tool"]
+    selected = 0
+
+    def get_formatted_text():
+        result = []
+        for i, option in enumerate(options):
+            if i == selected:
+                result.append(("class:selected", f">> {option}"))
+            else:
+                result.append(("", f"   {option}"))
+            result.append(("", "\n"))
+        return result
+
+    kb = KeyBindings()
+
+    @kb.add("up")
+    def _(event):
+        nonlocal selected
+        selected = (selected - 1) % len(options)
+
+    @kb.add("down")
+    def _(event):
+        nonlocal selected
+        selected = (selected + 1) % len(options)
+
+    @kb.add("enter")
+    def _(event):
+        event.app.exit(result=options[selected])
+
+    console.print("\nDo you want to do another search?", style="bold cyan")
+    
+    application = Application(
+        layout=Layout(Window(FormattedTextControl(get_formatted_text))),
+        key_bindings=kb,
+        full_screen=True,
+    )
+
+    result = application.run()
+    return result == "Yes, do another search"
