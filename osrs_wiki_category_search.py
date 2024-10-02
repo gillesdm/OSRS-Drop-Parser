@@ -193,13 +193,18 @@ def main():
     
     console_height = console.height
     monsters_list = Text("\n".join(monsters))
-    monsters_panel = Panel(
-        Group(monsters_list),
-        title="Monsters",
-        border_style="blue",
-        height=console_height - 15,  # Adjust this value to fit your layout
-        expand=True  # This ensures the panel takes up the full height
-    )
+    
+    def update_monsters_panel():
+        panel_height = console_height - layout["title"].size - layout["progress"].size - 2
+        return Panel(
+            Group(monsters_list),
+            title="Monsters",
+            border_style="blue",
+            height=panel_height,
+            expand=True
+        )
+    
+    monsters_panel = update_monsters_panel()
     layout["monsters"].update(monsters_panel)
     
     progress_monsters = Progress(
@@ -240,7 +245,8 @@ def main():
             monsters_list.stylize(f"green", start=monster_index, end=monster_index + len(monster) + 2)  # +2 for "✓ "
             
             # Auto-scroll the monsters list
-            panel_height = console_height - 15  # Match the height used in panel creation
+            monsters_panel = update_monsters_panel()
+            panel_height = monsters_panel.height
             visible_lines = panel_height - 4  # Accounting for panel borders and title
             scroll_index = max(0, monster_index - visible_lines + 1)
             monsters_panel.renderable = Group(monsters_list[scroll_index:])
