@@ -1,6 +1,6 @@
 import requests
-import mwparserfromhell
 import re
+from bs4 import BeautifulSoup
 
 def get_category_members(category_name):
     """
@@ -36,38 +36,26 @@ def get_monster_drops(monster_name):
     """
     Fetch the drop table for a given monster from the OSRS Wiki.
     """
-    base_url = "https://oldschool.runescape.wiki/api.php"
+    base_url = "https://oldschool.runescape.wiki/w/"
     
-    params = {
-        "action": "parse",
-        "page": monster_name,
-        "prop": "wikitext",
-        "format": "json"
-    }
+    response = requests.get(base_url + monster_name.replace(' ', '_'))
     
-    response = requests.get(base_url, params=params)
-    data = response.json()
-    
-    if 'error' in data:
+    if response.status_code != 200:
         return []
     
-    wikitext = data['parse']['wikitext']['*']
-    parsed = mwparserfromhell.parse(wikitext)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    
+    drops_table = soup.find('table', class_='item-drops')
+    
+    if not drops_table:
+        return []
     
     drops = []
-    for template in parsed.filter_templates():
-        if template.name.matches('DropsLine'):
-            try:
-                item = str(template.get('Item').value).strip()
-                drops.append(item)
-            except ValueError:
-                # If 'Item' is not found, try 'Name'
-                try:
-                    item = str(template.get('Name').value).strip()
-                    drops.append(item)
-                except ValueError:
-                    # If neither 'Item' nor 'Name' is found, skip this template
-                    continue
+    for row in drops_table.find_all('tr')[1:]:  # Skip header row
+        item_cell = row.find('td', class_='item-drop-name')
+        if item_cell:
+            item_name = item_cell.text.strip()
+            drops.append(item_name)
     
     return drops
 
