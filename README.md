@@ -65,7 +65,7 @@
    ```
 3. Clone the repository:
    ```
-   git clone https://github.com/yourusername/osrs-wiki-search-tool.git
+   git clone https://github.com/gillesdm/OSRS-Drop-Parser.git
    cd osrs-wiki-search-tool
    ```
 4. Create a virtual environment:
