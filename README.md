@@ -175,6 +175,15 @@ The tool will create output files in the `osrs_scraper/Output` directory. Depend
 
 ---
 
+## 🆕 Recent Updates
+
+- Added a new feature to warn users when their search is redirected to a different name.
+- Improved the user interface with a more interactive search type selection.
+- Enhanced error handling and user feedback for better user experience.
+- Removed dependency on `rich-spinner` package for simpler installation and usage.
+
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
