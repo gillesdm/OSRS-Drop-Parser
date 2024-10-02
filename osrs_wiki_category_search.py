@@ -12,10 +12,19 @@ with open('assets/item-db.json', 'r') as f:
 def get_item_id(item_name):
     """
     Look up the item ID for a given item name.
+    If not found, try searching without suffixes like '(m)'.
     """
     for item_id, item_data in item_db.items():
         if item_data['name'].lower() == item_name.lower():
             return int(item_id)
+    
+    # If not found, try without suffixes
+    base_name = re.sub(r'\([^)]*\)$', '', item_name).strip()
+    if base_name != item_name:
+        for item_id, item_data in item_db.items():
+            if item_data['name'].lower() == base_name.lower():
+                return int(item_id)
+    
     return None
 
 def get_category_members(category_name):
