@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New CHANGELOG.md file to track changes in the project
 - New feature to warn users when their search is redirected to a different name
 - Improved user interface with interactive search type selection
+- Added LICENSE file with MIT License
 
 ### Changed
 - Enhanced error handling and user feedback for better user experience
