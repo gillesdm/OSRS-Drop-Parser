@@ -55,7 +55,7 @@ def save_drops_to_file(category: str, monster_name: str, drops: List[Tuple[str, 
                 banklayout_content += ','.join(f"{id}:{i}" for i, id in enumerate(unique_ids))
                 banklayout_content += f",banktag:{category.lower()},"
                 banklayout_content += ','.join(map(str, unique_ids))
-                banklayout_file.write(banklayout_content)
+                banklayout_file.write(banklayout_content.rstrip(f"banktaglayoutsplugin:{category.lower()},,banktag:{category.lower()}"))
 
 def create_output_file(category: str) -> str:
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
