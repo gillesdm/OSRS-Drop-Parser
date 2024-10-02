@@ -8,6 +8,7 @@ from rich.columns import Columns
 from rich.prompt import Prompt
 from rich.console import Group
 from rich.padding import Padding
+from rich.live import Live
 from art import text2art
 from prompt_toolkit import prompt
 from prompt_toolkit.shortcuts import PromptSession
@@ -88,7 +89,39 @@ def get_input(console: Console, input_type: str) -> str:
     )
 
     console.print(input_panel)
-    return Prompt.ask(input_type.capitalize())
+    user_input = Prompt.ask(input_type.capitalize())
+    
+    # Simulating a redirect (you'll need to implement the actual redirect check)
+    redirected_name = check_redirect(user_input)
+    if redirected_name and redirected_name.lower() != user_input.lower():
+        warning_panel = create_warning_panel(user_input, redirected_name)
+        with Live(warning_panel, console=console, refresh_per_second=4) as live:
+            for _ in range(3):  # Display for about 3 seconds
+                live.update(warning_panel)
+                console.input()  # Wait for user input to continue
+        return redirected_name
+    
+    return user_input
+
+def check_redirect(name: str) -> str:
+    # This is a placeholder function. You need to implement the actual redirect check
+    # using your wiki API or other means to determine if a search is redirected.
+    # For now, it just returns the input name.
+    return name
+
+def create_warning_panel(original_name: str, redirected_name: str) -> Panel:
+    warning_text = Text()
+    warning_text.append(f"Your search for ", style="yellow")
+    warning_text.append(f"'{original_name}' ", style="bold yellow")
+    warning_text.append(f"was redirected to ", style="yellow")
+    warning_text.append(f"'{redirected_name}'", style="bold yellow")
+    
+    return Panel(
+        warning_text,
+        title="Search Redirected",
+        border_style="bold yellow",
+        expand=False
+    )
 
 def create_drops_table(drops):
     drops_table = Table(title="Drop Table", box=DOUBLE, border_style="yellow", header_style="bold yellow")
