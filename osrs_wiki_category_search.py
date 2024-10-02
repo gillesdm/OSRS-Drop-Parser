@@ -194,12 +194,35 @@ def main():
     monsters_table.add_column("Monster", style="magenta")
     layout["monsters"].update(Panel(monsters_table, title="Monsters", border_style="blue"))
     
+    progress_monsters = Progress(
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        TimeRemainingColumn()
+    )
+    progress_drops = Progress(
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%")
+    )
+    
+    progress_layout = Layout()
+    progress_layout.split_row(
+        Layout(progress_monsters),
+        Layout(progress_drops)
+    )
+    layout["progress"].update(progress_layout)
+    
     with Live(layout, console=console, screen=True, refresh_per_second=4) as live:
+        task_monsters = progress_monsters.add_task("[cyan]Processing monsters", total=len(monsters))
+        
         for i, monster in enumerate(monsters, 1):
             monsters_table.add_row(monster)
             layout["monsters"].update(Panel(monsters_table, title="Monsters", border_style="blue"))
             
+            task_drops = progress_drops.add_task(f"[yellow]Fetching drops for {monster}", total=100)
             drops = get_monster_drops(monster, save_to_file=True)
+            progress_drops.update(task_drops, completed=100)
             
             drops_table = Table(title="Drop Table", box=DOUBLE, border_style="yellow", header_style="bold yellow")
             drops_table.add_column("Item", style="green")
@@ -214,6 +237,7 @@ def main():
                 drops_table.add_row("No drops found", "N/A", style="red")
             
             layout["drops"].update(Panel(drops_table, title=f"Drops for {monster}", border_style="yellow"))
+            progress_monsters.update(task_monsters, advance=1)
             live.refresh()
 
 if __name__ == "__main__":
