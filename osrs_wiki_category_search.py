@@ -9,7 +9,7 @@ from components.file_operations import save_drops_to_file, create_output_file
 from components.ui import (
     create_header, create_layout, update_monsters_panel,
     create_progress_bar, create_drops_table, create_welcome_screen,
-    get_category_input, create_monster_search_panel
+    get_category_input, create_monster_search_panel, create_steps_panel
 )
 from components.logging_utils import log_parsed_data, set_logging
 
@@ -38,6 +38,7 @@ def main():
     
     layout = create_layout()
     layout["title"].update(create_header())
+    layout["steps"].update(create_steps_panel(1))
     
     console_height = console.height
     
@@ -76,6 +77,9 @@ def main():
         monsters_panel = update_monsters_panel(monsters_list, console_height, layout)
         layout["monsters"].update(monsters_panel)
         
+        layout["steps"].update(create_steps_panel(2))
+        live.refresh()
+        
         task_drops = progress_drops.add_task("[yellow]Fetching drops", total=len(monsters))
         
         for monster in monsters:
@@ -96,6 +100,9 @@ def main():
             
             layout["drops"].update(Panel(drops_table, title=f"Drops for {monster}", border_style="yellow"))
             live.refresh()
+        
+        layout["steps"].update(create_steps_panel(3))
+        live.refresh()
     
     console.print(f"\n[green]Drop tables for all monsters in category '{category}' have been saved to {file_path}")
 

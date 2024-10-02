@@ -8,10 +8,23 @@ from rich.layout import Layout
 from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn
 from rich.prompt import Prompt
 from rich.align import Align
+from rich.columns import Columns
 from art import text2art
 
 def create_header():
     return Panel("OSRS Scraper by @demuynckgilles", border_style="bold green")
+
+def create_steps_panel(current_step):
+    steps = [
+        "1. Looking for monsters",
+        "2. Fetching drops",
+        "3. Saving data"
+    ]
+    step_renderable = Columns([
+        Text(step, style="green bold" if i + 1 <= current_step else "dim")
+        for i, step in enumerate(steps)
+    ])
+    return Panel(step_renderable, title="Progress", border_style="cyan", expand=True)
 
 def create_welcome_screen(console):
     welcome_text = Text()
@@ -64,6 +77,7 @@ def create_layout():
     layout = Layout()
     layout.split(
         Layout(name="title", size=3),
+        Layout(name="steps", size=3),
         Layout(name="main", ratio=1),
         Layout(name="progress", size=5)
     )
