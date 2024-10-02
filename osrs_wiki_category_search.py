@@ -188,11 +188,6 @@ def main():
     
     layout["title"].update(create_header())
     
-    drops_table = Table(title="Drop Table", box=DOUBLE, border_style="yellow", header_style="bold yellow")
-    drops_table.add_column("Item", style="green")
-    drops_table.add_column("ID", style="cyan")
-    layout["drops"].update(Panel(drops_table, title="Drops", border_style="yellow"))
-    
     monsters_table = Table(title="Monsters", box=DOUBLE, border_style="blue", header_style="bold blue")
     monsters_table.add_column("Monster", style="magenta")
     layout["monsters"].update(Panel(monsters_table, title="Monsters", border_style="blue"))
@@ -204,7 +199,7 @@ def main():
             
             drops = get_monster_drops(monster, save_to_file=True)
             
-            drops_table.clear()
+            drops_table = Table(title="Drop Table", box=DOUBLE, border_style="yellow", header_style="bold yellow")
             drops_table.add_column("Item", style="green")
             drops_table.add_column("ID", style="cyan")
             
