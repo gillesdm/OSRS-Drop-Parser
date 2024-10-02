@@ -195,6 +195,10 @@ Use the --sort option with --id to sort the item IDs from small to large.
                     if redirected_name:
                         file_path = file_path.replace(search_input, redirected_name)
                     
+                    # Update search_input if redirected
+                    if search_type == "monster" and redirected_name:
+                        search_input = redirected_name
+                    
                     drops_with_ids = [(item, get_item_id(item, item_db)) for item in drops if item.lower() != "nothing"]
                     total_items += len(drops_with_ids)
                     if args.banklayout:

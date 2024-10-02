@@ -59,7 +59,7 @@ def get_monster_drops(monster_name: str) -> list[str]:
             redirect_page = redirect_match.group(1).replace('_', ' ').replace('%27', "'")
             print(f"Redirecting to: {redirect_page}")
             return get_monster_drops(redirect_page)
-        return []
+        return [], None
     
     # Check for redirect in successful responses as well
     redirect_match = re.search(r'<div class="redirectMsg">.*?<a href="/w/(.*?)"', data['parse']['text']['*'])
@@ -74,7 +74,7 @@ def get_monster_drops(monster_name: str) -> list[str]:
     drops = parse_drops(html_content) or parse_wikitext_drops(wikitext_content)
     
     log_parsed_data(monster_name, "monster_drops", drops)
-    return drops
+    return drops, None
 
 def parse_drops(content: str) -> list[str]:
     soup = BeautifulSoup(content, 'html.parser')
