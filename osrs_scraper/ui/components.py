@@ -76,7 +76,17 @@ def get_input(console: Console, input_type: str) -> str:
         input_text.append("- Monsters\n")
         input_text.append("- Slayer monsters\n")
         input_text.append("- Boss monsters\n")
-        input_text.append("- Wilderness monsters\n\n")
+        input_text.append("- Wilderness monsters\n")
+        input_text.append("- Dagannoth Kings\n")
+        input_text.append("- God Wars Dungeon bosses\n")
+        input_text.append("- Raid bosses\n")
+        input_text.append("- Barrows brothers\n")
+        input_text.append("- Revenants\n")
+        input_text.append("- Slayer bosses\n")
+        input_text.append("- Demi-bosses\n")
+        input_text.append("- Skilling bosses\n")
+        input_text.append("- Quest monsters\n")
+        input_text.append("- Minigame monsters\n\n")
     else:
         input_text.append("Enter the name of the monster (e.g., 'Zulrah', 'Abyssal demon'):\n\n")
 
