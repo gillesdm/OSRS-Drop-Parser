@@ -5,6 +5,19 @@ import json
 from bs4 import BeautifulSoup
 import mwparserfromhell
 
+# Load the item database
+with open('assets/item-db.json', 'r') as f:
+    item_db = json.load(f)
+
+def get_item_id(item_name):
+    """
+    Look up the item ID for a given item name.
+    """
+    for item_id, item_data in item_db.items():
+        if item_data['name'].lower() == item_name.lower():
+            return int(item_id)
+    return None
+
 def get_category_members(category_name):
     """
     Fetch all items in a given category from the OSRS Wiki.
@@ -39,6 +52,7 @@ def get_monster_drops(monster_name, save_to_file=False):
     """
     Fetch all drop tables for a given monster from the OSRS Wiki using the API.
     If save_to_file is True, the drop table will be saved to a local file.
+    Returns a list of tuples (item_name, item_id).
     """
     base_url = "https://oldschool.runescape.wiki/api.php"
     
@@ -70,10 +84,12 @@ def get_monster_drops(monster_name, save_to_file=False):
     if not drops:
         drops = parse_wikitext_drops(wikitext_content)
     
-    if save_to_file:
-        save_drops_to_file(monster_name, drops)
+    drops_with_ids = [(item, get_item_id(item)) for item in drops]
     
-    return drops
+    if save_to_file:
+        save_drops_to_file(monster_name, drops_with_ids)
+    
+    return drops_with_ids
 
 def parse_drops(content):
     soup = BeautifulSoup(content, 'html.parser')
@@ -126,8 +142,11 @@ def save_drops_to_file(monster_name, drops):
     os.makedirs("drop_tables", exist_ok=True)
     
     with open(file_path, "w") as file:
-        for drop in drops:
-            file.write(drop + "\n")
+        for drop, item_id in drops:
+            if item_id is not None:
+                file.write(f"{drop} (ID: {item_id})\n")
+            else:
+                file.write(f"{drop} (ID: Not found)\n")
     
     print(f"Drop table for {monster_name} saved to {file_path}")
 
@@ -141,8 +160,11 @@ def main():
         drops = get_monster_drops(monster, save_to_file=True)
         if drops:
             print(f"  Drops ({len(drops)} items):")
-            for drop in drops:
-                print(f"    - {drop}")
+            for drop, item_id in drops:
+                if item_id is not None:
+                    print(f"    - {drop} (ID: {item_id})")
+                else:
+                    print(f"    - {drop} (ID: Not found)")
         else:
             print("  No drops found or unable to fetch drop table.")
         print()
