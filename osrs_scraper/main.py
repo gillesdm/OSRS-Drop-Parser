@@ -47,6 +47,11 @@ def main():
         action="store_true",
         help="Output drop tables as a txt file in addition to JSON"
     )
+    parser.add_argument(
+        "--id",
+        action="store_true",
+        help="Output only item IDs as a comma-separated list in a txt file"
+    )
     
     # Add a more detailed description
     parser.description = """
@@ -60,10 +65,12 @@ This script allows you to:
 2. Fetch drop tables for all monsters in that category
 3. Save the drop tables in JSON format (always)
 4. Optionally save the drop tables in TXT format
-5. Display progress and results in a rich, interactive console interface
+5. Optionally save only item IDs as a comma-separated list
+6. Display progress and results in a rich, interactive console interface
 
 Use the --logs option to enable detailed logging for debugging.
 Use the --txt option to save drop tables in both JSON and TXT formats.
+Use the --id option to save only item IDs as a comma-separated list in a txt file.
     """
     
     args = parser.parse_args()
@@ -140,10 +147,11 @@ Use the --txt option to save drop tables in both JSON and TXT formats.
         for monster in monsters:
             drops = get_monster_drops(monster)
             drops_with_ids = [(item, get_item_id(item, item_db)) for item in drops if item.lower() != "nothing"]
-            save_drops_to_file(category, monster, drops_with_ids, file_path.rsplit('.', 1)[0], args.txt)
+            save_drops_to_file(category, monster, drops_with_ids, file_path.rsplit('.', 1)[0], args.txt, args.id)
             
-            drops_table = create_drops_table(drops_with_ids)
-            update_layout(layout, category, monsters, console.height, completed_steps, monster, drops_table, progress_bars=(monster_progress, drop_progress))
+            if not args.id:
+                drops_table = create_drops_table(drops_with_ids)
+                update_layout(layout, category, monsters, console.height, completed_steps, monster, drops_table, progress_bars=(monster_progress, drop_progress))
             drop_progress.update(drop_task, advance=1)
             live.refresh()
         
@@ -155,7 +163,10 @@ Use the --txt option to save drop tables in both JSON and TXT formats.
         update_layout(layout, category, monsters, console.height, completed_steps, progress_bars=(monster_progress, drop_progress))
         live.refresh()
     
-    console.print(f"\n[green]Drop tables for all monsters in category '{category}' have been saved to {file_path}")
+    if args.id:
+        console.print(f"\n[green]Item IDs for all monsters in category '{category}' have been saved to {file_path.rsplit('.', 1)[0]}_ids.txt")
+    else:
+        console.print(f"\n[green]Drop tables for all monsters in category '{category}' have been saved to {file_path}")
 
 if __name__ == "__main__":
     main()

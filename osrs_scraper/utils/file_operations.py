@@ -3,9 +3,9 @@ import json
 from datetime import datetime
 from typing import List, Tuple, Optional
 
-def save_drops_to_file(category: str, monster_name: str, drops: List[Tuple[str, Optional[int]]], file_path: str, txt_output: bool = False) -> None:
+def save_drops_to_file(category: str, monster_name: str, drops: List[Tuple[str, Optional[int]]], file_path: str, txt_output: bool = False, id_only: bool = False) -> None:
     """Save the drop table for a given monster to a single file for the category."""
-    # Save to JSON
+    # Save to JSON (always)
     json_file_path = file_path.rsplit('.', 1)[0] + '.json'
     with open(json_file_path, 'r+') as json_file:
         try:
@@ -20,12 +20,19 @@ def save_drops_to_file(category: str, monster_name: str, drops: List[Tuple[str, 
         json_file.truncate()
 
     # Save to TXT if txt_output is True
-    if txt_output:
+    if txt_output and not id_only:
         with open(file_path, "a") as txt_file:
             txt_file.write(f"Drop table for {monster_name}:\n")
             for drop, item_id in drops:
                 txt_file.write(f"{drop} (ID: {item_id if item_id is not None else 'Not found'})\n")
             txt_file.write("\n")  # Add a blank line between monsters
+
+    # Save only item IDs if id_only is True
+    if id_only:
+        id_file_path = file_path.rsplit('.', 1)[0] + '_ids.txt'
+        with open(id_file_path, "a") as id_file:
+            unique_ids = set(item_id for _, item_id in drops if item_id is not None)
+            id_file.write(','.join(map(str, unique_ids)) + '\n')
 
 def create_output_file(category: str) -> str:
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
