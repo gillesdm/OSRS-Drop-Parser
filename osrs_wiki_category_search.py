@@ -1,6 +1,7 @@
 from rich.console import Console
 from rich.live import Live
 from rich.panel import Panel
+from rich.progress import Progress, TextColumn, BarColumn
 from components.wiki_api import get_category_members, get_monster_drops, is_monster
 from components.item_database import load_item_database, get_item_id
 from components.file_operations import save_drops_to_file, create_output_file
