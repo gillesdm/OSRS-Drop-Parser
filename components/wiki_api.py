@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import mwparserfromhell
+from components.logging_utils import log_api_response, log_parsed_data
 
 def get_category_members(category_name):
     """
@@ -20,6 +21,7 @@ def get_category_members(category_name):
     
     while True:
         response = requests.get(base_url, params=params)
+        log_api_response(category_name, base_url, params, response)
         data = response.json()
         
         for member in data["query"]["categorymembers"]:
@@ -30,6 +32,7 @@ def get_category_members(category_name):
         else:
             break
     
+    log_parsed_data(category_name, "category_members", items)
     return items
 
 def get_monster_drops(monster_name):
@@ -48,6 +51,7 @@ def get_monster_drops(monster_name):
     }
     
     response = requests.get(base_url, params=params)
+    log_api_response(monster_name, base_url, params, response)
     
     if response.status_code != 200:
         print(f"Failed to fetch data for {monster_name}")
@@ -67,6 +71,7 @@ def get_monster_drops(monster_name):
     if not drops:
         drops = parse_wikitext_drops(wikitext_content)
     
+    log_parsed_data(monster_name, "monster_drops", drops)
     return drops
 
 def parse_drops(content):

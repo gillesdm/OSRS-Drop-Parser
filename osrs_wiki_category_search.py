@@ -9,6 +9,7 @@ from components.ui import (
     create_progress_bars, create_drops_table, create_welcome_screen,
     get_category_input
 )
+from components.logging_utils import log_parsed_data
 
 def main():
     console = Console()
@@ -27,6 +28,8 @@ def main():
     item_db = load_item_database()
     all_entries = get_category_members(category)
     monsters = [entry for entry in all_entries if is_monster(entry)]
+    
+    log_parsed_data(category, "filtered_monsters", monsters)
     
     if not monsters:
         console.print(f"[red]No monsters found in the category '{category}'.[/red]")
