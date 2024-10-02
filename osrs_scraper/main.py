@@ -21,6 +21,8 @@ from osrs_scraper.ui.components import (
     get_search_type,
     get_input,
     create_drops_table,
+    create_summary_message,
+    ask_for_another_search,
 )
 from osrs_scraper.ui.layout import (
     create_layout,
