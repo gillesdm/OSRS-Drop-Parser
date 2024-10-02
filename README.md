@@ -1,27 +1,40 @@
-# OSRS Wiki Search Tool
+<div align="center">
+
+# 🎮 OSRS Wiki Search Tool 🔍
 
 ![OSRS Wiki Search Tool](https://img.shields.io/badge/OSRS-Wiki%20Search%20Tool-brightgreen)
+![Python](https://img.shields.io/badge/Python-3.7%2B-blue)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
-A powerful command-line tool to fetch and save drop tables for monsters in Old School RuneScape (OSRS) using the OSRS Wiki API.
+<img src="https://oldschool.runescape.wiki/images/thumb/Wise_Old_Man_chathead.png/200px-Wise_Old_Man_chathead.png" alt="Wise Old Man" width="150"/>
 
-## Features
+*"Knowledge is power, and with this tool, you'll have the wisdom of the Wise Old Man at your fingertips!"*
 
-- Search for monsters within a specific OSRS Wiki category or search for a specific monster
-- Fetch drop tables for all monsters in a category or for a specific monster
-- Save drop tables in JSON format (always)
-- Optionally save drop tables in TXT format
-- Optionally save only item IDs as a comma-separated list
-- Create RuneLite bank layout files
-- Display progress and results in a rich, interactive console interface
+</div>
 
-## Installation
+---
+
+## 🌟 Features
+
+- 🔎 Search for monsters within a specific OSRS Wiki category or search for a specific monster
+- 📊 Fetch drop tables for all monsters in a category or for a specific monster
+- 💾 Save drop tables in JSON format (always)
+- 📝 Optionally save drop tables in TXT format
+- 🔢 Optionally save only item IDs as a comma-separated list
+- 🏦 Create RuneLite bank layout files
+- 🖥️ Display progress and results in a rich, interactive console interface
+
+---
+
+## 🚀 Installation
 
 ### Prerequisites
 
 - Python 3.7 or higher
 - pip (Python package installer)
 
-If you don't have Python installed, follow these steps:
+<details>
+<summary>📥 Click here for detailed installation instructions</summary>
 
 #### Windows
 
@@ -87,7 +100,12 @@ If you don't have Python installed, follow these steps:
    pip install -r requirements.txt
    ```
 
-### Troubleshooting
+</details>
+
+### 🛠️ Troubleshooting
+
+<details>
+<summary>Click here for troubleshooting tips</summary>
 
 If you encounter any issues during installation:
 
@@ -95,7 +113,11 @@ If you encounter any issues during installation:
 - If you get a "command not found" error, make sure Python is added to your system's PATH.
 - If you have issues with pip, you may need to upgrade it: `python -m pip install --upgrade pip` (Windows) or `python3 -m pip install --upgrade pip` (macOS).
 
-## Usage
+</details>
+
+---
+
+## 🎮 Usage
 
 To run the OSRS Wiki Search Tool, use the following command:
 
@@ -103,15 +125,20 @@ To run the OSRS Wiki Search Tool, use the following command:
 python osrs_scraper/main.py [options]
 ```
 
-### Options
+### 🛠️ Options
 
-- `--logs`: Enable logging of API responses and parsed data
-- `--txt`: Output drop tables as a txt file in addition to JSON
-- `--id`: Output only item IDs as a comma-separated list in a txt file (default: True)
-- `--sort`: Sort the item IDs from small to large (default: True)
-- `--banklayout`: Create a RuneLite bank layout file (default: True)
+| Option | Description |
+|--------|-------------|
+| `--logs` | Enable logging of API responses and parsed data |
+| `--txt` | Output drop tables as a txt file in addition to JSON |
+| `--id` | Output only item IDs as a comma-separated list in a txt file (default: True) |
+| `--sort` | Sort the item IDs from small to large (default: True) |
+| `--banklayout` | Create a RuneLite bank layout file (default: True) |
 
-### Examples
+### 📚 Examples
+
+<details>
+<summary>Click to see usage examples</summary>
 
 1. Search for a specific monster and save drop table in JSON and TXT formats:
    ```
@@ -133,26 +160,40 @@ python osrs_scraper/main.py [options]
    python osrs_scraper/main.py --logs
    ```
 
-## Output
+</details>
+
+---
+
+## 📂 Output
 
 The tool will create output files in the `osrs_scraper/Output` directory. Depending on the options used, you may find:
 
-- JSON files with full drop table information
-- TXT files with formatted drop tables
-- TXT files with comma-separated item IDs
-- TXT files with RuneLite bank layout data
+- 📊 JSON files with full drop table information
+- 📝 TXT files with formatted drop tables
+- 🔢 TXT files with comma-separated item IDs
+- 🏦 TXT files with RuneLite bank layout data
 
-## Contributing
+---
+
+## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## License
+## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
 - OSRS Wiki for providing the API and data
 - The OSRS community for their continued support and contributions to the wiki
 
-Happy scaping!
+<div align="center">
+
+### Happy scaping! 🎉
+
+<img src="https://oldschool.runescape.wiki/images/thumb/Gnome_child_chathead.png/150px-Gnome_child_chathead.png" alt="Gnome Child" width="100"/>
+
+*"Get rich quick with this one weird trick: Use the OSRS Wiki Search Tool!"*
+
+</div>
