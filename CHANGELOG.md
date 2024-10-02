@@ -9,17 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - New CHANGELOG.md file to track changes in the project
-- New feature to warn users when their search is redirected to a different name
-- Improved user interface with interactive search type selection
-- Added LICENSE file with MIT License
+- LICENSE file with MIT License
 
-### Changed
-- Enhanced error handling and user feedback for better user experience
-
-### Removed
-- Dependency on `rich-spinner` package for simpler installation and usage
-
-## [1.0.0] - 2023-04-15
+## [0.1.0] - 2023-04-15
 
 ### Added
 - Initial release of the OSRS Wiki Search Tool
@@ -30,3 +22,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Option to save only item IDs as a comma-separated list
 - Create RuneLite bank layout files
 - Display progress and results in a rich, interactive console interface
+
+### Changed
+- Enhanced error handling and user feedback for better user experience
+
+### Removed
+- Dependency on `rich-spinner` package for simpler installation and usage
+
+## [0.0.1] - 2023-04-01
+
+### Added
+- Project setup and initial codebase
