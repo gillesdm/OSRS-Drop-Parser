@@ -188,8 +188,8 @@ def main():
         Layout(name="monsters", ratio=1)
     )
     layout["progress"].split_row(
-        Layout(name="monster_progress", ratio=1),
-        Layout(name="drop_progress", ratio=1)
+        Layout(name="drop_progress", ratio=1),
+        Layout(name="monster_progress", ratio=1)
     )
     
     layout["title"].update(create_header())
