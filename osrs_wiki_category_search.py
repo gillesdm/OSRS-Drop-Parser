@@ -228,8 +228,8 @@ def main():
             
             # Update the monster name to green and add a checkmark in the monsters list
             monster_index = monsters_list.plain.index(monster)
-            monsters_list.stylize(f"green", start=monster_index, end=monster_index + len(monster))
-            monsters_list.insert(monster_index, "✓ ")
+            monsters_list = Text("\n".join(["✓ " + m if m == monster else m for m in monsters_list.plain.split("\n")]))
+            monsters_list.stylize(f"green", start=monster_index, end=monster_index + len(monster) + 2)  # +2 for "✓ "
             layout["monsters"].update(Panel(monsters_list, title="Monsters", border_style="blue"))
             
             drops_table = Table(title="Drop Table", box=DOUBLE, border_style="yellow", header_style="bold yellow")
