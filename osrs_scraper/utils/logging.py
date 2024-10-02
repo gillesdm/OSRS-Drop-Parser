@@ -9,15 +9,11 @@ def set_logging(enabled: bool) -> None:
     global enable_logging
     enable_logging = enabled
 
-def ensure_log_directory() -> None:
-    """Ensure the Logs directory exists."""
-    os.makedirs("Logs", exist_ok=True)
-
 def log_data(category: str, data_type: str, data: Any) -> None:
     """Log data to a file in the Logs directory."""
     if not enable_logging:
         return
-    ensure_log_directory()
+    os.makedirs("Logs", exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     safe_category = category.replace('/', '_')
     filename = f"Logs/{safe_category}_{data_type}_{timestamp}.log"

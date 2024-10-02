@@ -1,5 +1,6 @@
 import os
 import sys
+import shutil
 
 # Add the parent directory to the Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -25,11 +26,17 @@ from osrs_scraper.ui.layout import (
     update_layout,
 )
 
+def remove_existing_logs():
+    log_dir = os.path.join(current_dir, "Logs")
+    if os.path.exists(log_dir):
+        shutil.rmtree(log_dir)
+
 def main():
     parser = argparse.ArgumentParser(description="OSRS Wiki Category Search")
     parser.add_argument("--logs", action="store_true", help="Enable logging")
     args = parser.parse_args()
 
+    remove_existing_logs()
     set_logging(args.logs)
     console = Console()
     
