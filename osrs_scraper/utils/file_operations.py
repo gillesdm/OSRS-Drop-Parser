@@ -44,18 +44,24 @@ def save_drops_to_file(category: str, monster_name: str, drops: List[Tuple[str, 
                 unique_ids = sorted(unique_ids)
             id_file.write(','.join(map(str, unique_ids)) + '\n')
 
-        # Save RuneLite bank layout if banklayout is True
-        if banklayout:
-            banklayout_file_path = file_path.rsplit('.', 1)[0] + '_banklayout.txt'
-            with open(banklayout_file_path, "a") as banklayout_file:
-                unique_ids = list(set(item_id for _, item_id in drops if item_id is not None))
-                if sort_ids:
-                    unique_ids.sort()
-                banklayout_content = f"banktaglayoutsplugin:{category.lower()},"
-                banklayout_content += ','.join(f"{id}:{i}" for i, id in enumerate(unique_ids))
-                banklayout_content += f",banktag:{category.lower()},"
-                banklayout_content += ','.join(map(str, unique_ids))
-                banklayout_file.write(banklayout_content.rstrip(f"banktaglayoutsplugin:{category.lower()},,banktag:{category.lower()}"))
+    # Collect unique IDs for bank layout
+    if banklayout:
+        banklayout_file_path = file_path.rsplit('.', 1)[0] + '_banklayout.txt'
+        unique_ids = set(item_id for _, item_id in drops if item_id is not None)
+        return unique_ids
+
+def save_banklayout(category: str, all_unique_ids: Set[int], file_path: str, sort_ids: bool = False) -> None:
+    """Save the RuneLite bank layout for all monsters in a category."""
+    banklayout_file_path = file_path.rsplit('.', 1)[0] + '_banklayout.txt'
+    unique_ids = list(all_unique_ids)
+    if sort_ids:
+        unique_ids.sort()
+    with open(banklayout_file_path, "w") as banklayout_file:
+        banklayout_content = f"banktaglayoutsplugin:{category.lower()},"
+        banklayout_content += ','.join(f"{id}:{i}" for i, id in enumerate(unique_ids))
+        banklayout_content += f",banktag:{category.lower()},"
+        banklayout_content += ','.join(map(str, unique_ids))
+        banklayout_file.write(banklayout_content)
 
 def create_output_file(category: str) -> str:
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")

@@ -160,16 +160,22 @@ Use the --sort option with --id to sort the item IDs from small to large.
         update_layout(layout, category, monsters, console.height, completed_steps, progress_bars=(monster_progress, drop_progress))
         live.refresh()
 
+        all_unique_ids = set()
         for monster in monsters:
             drops = get_monster_drops(monster)
             drops_with_ids = [(item, get_item_id(item, item_db)) for item in drops if item.lower() != "nothing"]
-            save_drops_to_file(category, monster, drops_with_ids, file_path.rsplit('.', 1)[0], args.txt, args.id, args.sort, args.banklayout)
+            monster_unique_ids = save_drops_to_file(category, monster, drops_with_ids, file_path.rsplit('.', 1)[0], args.txt, args.id, args.sort, args.banklayout)
+            if args.banklayout:
+                all_unique_ids.update(monster_unique_ids)
             
             if not args.id:
                 drops_table = create_drops_table(drops_with_ids)
                 update_layout(layout, category, monsters, console.height, completed_steps, monster, drops_table, progress_bars=(monster_progress, drop_progress))
             drop_progress.update(drop_task, advance=1)
             live.refresh()
+        
+        if args.banklayout:
+            save_banklayout(category, all_unique_ids, file_path.rsplit('.', 1)[0], args.sort)
         
         completed_steps[4] = True  # Saving data
         update_layout(layout, category, monsters, console.height, completed_steps, progress_bars=(monster_progress, drop_progress))
@@ -181,9 +187,9 @@ Use the --sort option with --id to sort the item IDs from small to large.
     
     if args.id:
         console.print(f"\n[green]Item IDs for all monsters in category '{category}' have been saved to {file_path.rsplit('.', 1)[0]}_ids.txt")
-        if args.banklayout:
-            console.print(f"[green]RuneLite bank layout for category '{category}' has been saved to {file_path.rsplit('.', 1)[0]}_banklayout.txt")
-    else:
+    if args.banklayout:
+        console.print(f"[green]RuneLite bank layout for category '{category}' has been saved to {file_path.rsplit('.', 1)[0]}_banklayout.txt")
+    if not args.id:
         console.print(f"\n[green]Drop tables for all monsters in category '{category}' have been saved to {file_path}")
 
 if __name__ == "__main__":
