@@ -73,7 +73,7 @@ def get_monster_drops(monster_name, save_to_file=False):
     """
     Fetch all drop tables for a given monster from the OSRS Wiki using the API.
     If save_to_file is True, the drop table will be saved to a local file.
-    Returns a list of tuples (item_name, item_id).
+    Returns a tuple of (list of tuples (item_name, item_id), total number of drops).
     """
     base_url = "https://oldschool.runescape.wiki/api.php"
     
@@ -110,7 +110,7 @@ def get_monster_drops(monster_name, save_to_file=False):
     if save_to_file:
         save_drops_to_file(monster_name, drops_with_ids)
     
-    return drops_with_ids
+    return drops_with_ids, len(drops)
 
 def parse_drops(content):
     soup = BeautifulSoup(content, 'html.parser')
@@ -217,12 +217,12 @@ def main():
     
     with Live(layout, console=console, screen=True, refresh_per_second=4) as live:
         task_monsters = progress_monsters.add_task("[cyan]Processing monsters", total=len(monsters))
-        task_drops = progress_drops.add_task("[yellow]Fetching drops", total=len(monsters))
+        task_drops = progress_drops.add_task("[yellow]Fetching drops", total=100)  # We'll update this later
         
         for i, monster in enumerate(monsters, 1):
-            progress_drops.update(task_drops, completed=i-1, description=f"[yellow]Fetching drops for {monster}")
-            drops = get_monster_drops(monster, save_to_file=True)
-            progress_drops.update(task_drops, completed=i)
+            progress_drops.update(task_drops, completed=0, description=f"[yellow]Fetching drops for {monster}")
+            drops, total_drops = get_monster_drops(monster, save_to_file=True)
+            progress_drops.update(task_drops, total=total_drops, completed=total_drops)
             
             drops_table = Table(title="Drop Table", box=DOUBLE, border_style="yellow", header_style="bold yellow")
             drops_table.add_column("Item", style="green")
