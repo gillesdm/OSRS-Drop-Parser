@@ -106,12 +106,13 @@ def get_monster_drops(monster_name, save_to_file=False):
     if not drops:
         drops = parse_wikitext_drops(wikitext_content)
     
-    drops_with_ids = [(item, get_item_id(item)) for item in drops]
+    # Remove "Nothing" or similar items and get IDs for the rest
+    drops_with_ids = [(item, get_item_id(item)) for item in drops if item.lower() != "nothing"]
     
     if save_to_file:
         save_drops_to_file(monster_name, drops_with_ids)
     
-    return drops_with_ids, len(drops)
+    return drops_with_ids, len(drops_with_ids)
 
 def parse_drops(content):
     soup = BeautifulSoup(content, 'html.parser')
