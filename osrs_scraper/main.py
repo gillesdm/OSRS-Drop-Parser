@@ -9,6 +9,7 @@ sys.path.insert(0, parent_dir)
 import argparse
 from rich.console import Console
 from rich.live import Live
+from rich.progress import Progress, TaskID
 
 from osrs_scraper.api.wiki_api import get_category_members, get_monster_drops, is_monster
 from osrs_scraper.data.item_database import load_item_database, get_item_id
@@ -53,18 +54,27 @@ def main():
     file_path = create_output_file(category)
     
     with Live(layout, console=console, screen=True, refresh_per_second=4) as live:
-        monsters = [entry for entry in all_entries if is_monster(entry)]
+        monster_progress = Progress()
+        drop_progress = Progress()
+        monster_task = monster_progress.add_task("[cyan]Checking monsters...", total=len(all_entries))
+        
+        monsters = []
+        for entry in all_entries:
+            if is_monster(entry):
+                monsters.append(entry)
+            monster_progress.update(monster_task, advance=1)
+            update_layout(layout, category, monsters, console.height, progress_bars=(monster_progress, drop_progress))
+            live.refresh()
         
         if args.logs:
             log_parsed_data(category, "filtered_monsters", monsters)
         
         if not monsters:
-            update_layout(layout, category, [], console.height)
+            update_layout(layout, category, [], console.height, progress_bars=(monster_progress, drop_progress))
             live.refresh()
             return
         
-        update_layout(layout, category, monsters, console.height)
-        live.refresh()
+        drop_task = drop_progress.add_task("[yellow]Fetching drops...", total=len(monsters))
         
         for monster in monsters:
             drops = get_monster_drops(monster)
@@ -72,7 +82,8 @@ def main():
             save_drops_to_file(category, monster, drops_with_ids, file_path)
             
             drops_table = create_drops_table(drops_with_ids)
-            update_layout(layout, category, monsters, console.height, monster, drops_table)
+            update_layout(layout, category, monsters, console.height, monster, drops_table, progress_bars=(monster_progress, drop_progress))
+            drop_progress.update(drop_task, advance=1)
             live.refresh()
     
     console.print(f"\n[green]Drop tables for all monsters in category '{category}' have been saved to {file_path}")

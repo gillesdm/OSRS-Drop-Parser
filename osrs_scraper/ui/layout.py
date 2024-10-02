@@ -58,15 +58,14 @@ def create_progress_bar() -> Progress:
         TextColumn("[progress.completed]{task.completed:>3}/{task.total}")
     )
 
-def update_layout(layout: Layout, category: str, monsters: list, console_height: int, current_monster: str = None, drops_table = None) -> None:
+def update_layout(layout: Layout, category: str, monsters: list, console_height: int, current_monster: str = None, drops_table = None, progress_bars: tuple = None) -> None:
     layout["title"].update(create_header())
     layout["steps"].update(create_steps_panel(2 if current_monster else 1))
     
     if not monsters:
         layout["monster_search"].update(Panel(f"[red]No monsters found in the category '{category}'.[/red]", title="Monster Search", border_style="cyan"))
-        return
-    
-    layout["monster_search"].update(Panel(f"Found {len(monsters)} monsters", title="Monster Search", border_style="cyan"))
+    else:
+        layout["monster_search"].update(Panel(f"Found {len(monsters)} monsters", title="Monster Search", border_style="cyan"))
     
     monsters_list = "\n".join(["✓ " + m if m == current_monster else m for m in monsters])
     monsters_panel = update_monsters_panel(monsters_list, console_height, layout)
@@ -74,3 +73,8 @@ def update_layout(layout: Layout, category: str, monsters: list, console_height:
     
     if drops_table:
         layout["drops"].update(Panel(drops_table, title=f"Drops for {current_monster}", border_style="yellow"))
+    
+    if progress_bars:
+        monster_progress, drop_progress = progress_bars
+        layout["monster_progress"].update(Panel(monster_progress, title="Monster Progress", border_style="cyan"))
+        layout["drop_progress"].update(Panel(drop_progress, title="Drop Progress", border_style="yellow"))
