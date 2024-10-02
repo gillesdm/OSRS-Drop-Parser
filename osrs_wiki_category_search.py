@@ -12,6 +12,7 @@ from rich.table import Table
 from rich.box import DOUBLE
 from rich.style import Style
 from rich.layout import Layout
+from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn
 
 # Load the item database
 with open('assets/item-db.json', 'r') as f:
@@ -179,7 +180,8 @@ def main():
     layout = Layout()
     layout.split(
         Layout(name="title", size=3),
-        Layout(name="main", ratio=1)
+        Layout(name="main", ratio=1),
+        Layout(name="progress", size=3)
     )
     layout["main"].split_row(
         Layout(name="drops", ratio=1),
