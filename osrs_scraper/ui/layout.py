@@ -41,7 +41,7 @@ def create_steps_panel(completed_steps: list[bool]) -> Panel:
         "5. Saving data",
         "6. Finalizing"
     ]
-    step_renderable = "\n".join([
+    step_renderable = " | ".join([
         f"[{'green' if completed else 'yellow' if i == completed_steps.index(False) else 'white'}]{step}[/]"
         for i, (step, completed) in enumerate(zip(steps, completed_steps))
     ])
