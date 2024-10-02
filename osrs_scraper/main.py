@@ -50,17 +50,20 @@ def main():
     parser.add_argument(
         "--id",
         action="store_true",
-        help="Output only item IDs as a comma-separated list in a txt file"
+        default=True,
+        help="Output only item IDs as a comma-separated list in a txt file (default: True)"
     )
     parser.add_argument(
         "--sort",
         action="store_true",
-        help="Sort the item IDs from small to large (only applicable with --id)"
+        default=True,
+        help="Sort the item IDs from small to large (default: True)"
     )
     parser.add_argument(
         "--banklayout",
         action="store_true",
-        help="Create a RuneLite bank layout file"
+        default=True,
+        help="Create a RuneLite bank layout file (default: True)"
     )
     
     # Add a more detailed description
@@ -86,8 +89,7 @@ Use the --sort option with --id to sort the item IDs from small to large.
     
     args = parser.parse_args()
 
-    if args.banklayout and not args.id:
-        parser.error("--banklayout requires --id to be set")
+    # Remove this check as --id and --banklayout are now true by default
 
     remove_existing_logs()
     set_logging(args.logs)
