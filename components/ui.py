@@ -2,11 +2,12 @@ from rich.console import Console, Group
 from rich.panel import Panel
 from rich.text import Text
 from rich.table import Table
-from rich.box import DOUBLE
+from rich.box import DOUBLE, ROUNDED
 from rich.style import Style
 from rich.layout import Layout
 from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn
 from rich.prompt import Prompt
+from rich.align import Align
 from art import text2art
 
 def create_header():
@@ -27,8 +28,36 @@ def create_welcome_screen(console):
     
     return Panel(welcome_text, title="Welcome", border_style="bold blue", expand=True, height=console.height)
 
-def get_category_input():
-    return Prompt.ask("[bold cyan]Enter the OSRS Wiki category to search")
+def get_category_input(console):
+    category_input_text = Text()
+    category_input_text.append("Enter the OSRS Wiki category to search:\n\n", style="bold cyan")
+    category_input_text.append("Some example categories:\n", style="cyan")
+    category_input_text.append("- Monsters\n")
+    category_input_text.append("- Slayer monsters\n")
+    category_input_text.append("- Boss monsters\n")
+    category_input_text.append("- Wilderness monsters\n\n")
+
+    category_input = Align.center(
+        Panel(
+            Prompt.ask("Category"),
+            border_style="yellow",
+            box=ROUNDED,
+            expand=False,
+            title="Enter Category",
+            title_align="center"
+        )
+    )
+
+    category_panel = Panel(
+        Group(category_input_text, category_input),
+        title="Category Input",
+        border_style="bold blue",
+        expand=True,
+        height=console.height
+    )
+
+    console.print(category_panel)
+    return category_input.renderable.prompt.ask()
 
 def create_layout():
     layout = Layout()

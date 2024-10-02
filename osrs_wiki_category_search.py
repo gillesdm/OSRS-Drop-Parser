@@ -22,7 +22,7 @@ def main():
     console.clear()
     
     # Get category input
-    category = get_category_input()
+    category = get_category_input(console)
     
     item_db = load_item_database()
     monsters = get_category_members(category)
