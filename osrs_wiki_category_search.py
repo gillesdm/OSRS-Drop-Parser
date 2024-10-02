@@ -1,3 +1,4 @@
+import argparse
 from rich.console import Console
 from rich.live import Live
 from rich.panel import Panel
@@ -10,9 +11,15 @@ from components.ui import (
     create_progress_bars, create_drops_table, create_welcome_screen,
     get_category_input
 )
-from components.logging_utils import log_parsed_data
+from components.logging_utils import log_parsed_data, set_logging
 
 def main():
+    parser = argparse.ArgumentParser(description="OSRS Wiki Category Search")
+    parser.add_argument("--logs", action="store_true", help="Enable logging")
+    args = parser.parse_args()
+
+    set_logging(args.logs)
+
     console = Console()
     
     # Display welcome screen
@@ -43,7 +50,8 @@ def main():
                 monsters.append(entry)
             progress.update(check_task, advance=1)
     
-    log_parsed_data(category, "filtered_monsters", monsters)
+    if args.logs:
+        log_parsed_data(category, "filtered_monsters", monsters)
     
     if not monsters:
         console.print(f"[red]No monsters found in the category '{category}'.[/red]")
