@@ -24,6 +24,7 @@ def create_welcome_screen(console: Console) -> Panel:
     welcome_text.append(title_art + "\n", style="bold magenta")
     welcome_text.append("Welcome to the OSRS Wiki Search Tool!\n\n", style="bold green")
     welcome_text.append("This tool allows you to search for monsters in a specific category or get drops for a specific monster.\n\n")
+    welcome_text.append("When searching by category, you can enter a number to quickly select from the example categories.\n\n")
     welcome_text.append("Press Enter to continue...", style="bold yellow")
     
     return Panel(welcome_text, title="Welcome", border_style="bold blue", expand=True, height=console.height)
@@ -72,21 +73,16 @@ def get_input(console: Console, input_type: str) -> str:
     input_text.append(f"Enter the OSRS Wiki {input_type} to search:\n\n", style="bold cyan")
     
     if input_type == "category":
-        input_text.append("Some example categories:\n", style="cyan")
-        input_text.append("- Monsters\n")
-        input_text.append("- Slayer monsters\n")
-        input_text.append("- Boss monsters\n")
-        input_text.append("- Wilderness monsters\n")
-        input_text.append("- Dagannoth Kings\n")
-        input_text.append("- God Wars Dungeon bosses\n")
-        input_text.append("- Raid bosses\n")
-        input_text.append("- Barrows brothers\n")
-        input_text.append("- Revenants\n")
-        input_text.append("- Slayer bosses\n")
-        input_text.append("- Demi-bosses\n")
-        input_text.append("- Skilling bosses\n")
-        input_text.append("- Quest monsters\n")
-        input_text.append("- Minigame monsters\n\n")
+        categories = [
+            "Monsters", "Slayer monsters", "Boss monsters", "Wilderness monsters",
+            "Dagannoth Kings", "God Wars Dungeon bosses", "Raid bosses",
+            "Barrows brothers", "Revenants", "Slayer bosses", "Demi-bosses",
+            "Skilling bosses", "Quest monsters", "Minigame monsters"
+        ]
+        input_text.append("Example categories (enter the number or type your own):\n", style="cyan")
+        for i, category in enumerate(categories, 1):
+            input_text.append(f"{i}. {category}\n", style="green")
+        input_text.append("\n")
     else:
         input_text.append("Enter the name of the monster (e.g., 'Zulrah', 'Abyssal demon'):\n\n")
 
@@ -100,6 +96,11 @@ def get_input(console: Console, input_type: str) -> str:
 
     console.print(input_panel)
     user_input = Prompt.ask(input_type.capitalize())
+    
+    if input_type == "category" and user_input.isdigit():
+        index = int(user_input) - 1
+        if 0 <= index < len(categories):
+            user_input = categories[index]
     
     # Simulating a redirect (you'll need to implement the actual redirect check)
     redirected_name = check_redirect(user_input)
