@@ -1,4 +1,5 @@
 import os
+import os
 import json
 from datetime import datetime
 from typing import List, Tuple, Optional
@@ -7,6 +8,13 @@ def save_drops_to_file(category: str, monster_name: str, drops: List[Tuple[str, 
     """Save the drop table for a given monster to a single file for the category."""
     # Save to JSON (always)
     json_file_path = file_path.rsplit('.', 1)[0] + '.json'
+    
+    # Check if the file exists, if not create it with an empty JSON object
+    if not os.path.exists(json_file_path):
+        with open(json_file_path, 'w') as json_file:
+            json.dump({}, json_file)
+    
+    # Now open the file in read and write mode
     with open(json_file_path, 'r+') as json_file:
         try:
             data = json.load(json_file)
