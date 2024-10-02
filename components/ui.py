@@ -6,9 +6,26 @@ from rich.box import DOUBLE
 from rich.style import Style
 from rich.layout import Layout
 from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn
+from rich.prompt import Prompt
 
 def create_header():
     return Panel("OSRS Scraper by @demuynckgilles", border_style="bold green")
+
+def create_welcome_screen():
+    welcome_text = Text()
+    welcome_text.append("Welcome to the OSRS Wiki Category Search Tool!\n\n", style="bold green")
+    welcome_text.append("This tool allows you to search for monsters in a specific category and retrieve their drop tables.\n\n")
+    welcome_text.append("Some example categories you can try:\n", style="cyan")
+    welcome_text.append("- Monsters\n")
+    welcome_text.append("- Slayer monsters\n")
+    welcome_text.append("- Boss monsters\n")
+    welcome_text.append("- Wilderness monsters\n\n")
+    welcome_text.append("Press Enter to continue...", style="bold yellow")
+    
+    return Panel(welcome_text, title="Welcome", border_style="bold blue", expand=False)
+
+def get_category_input():
+    return Prompt.ask("[bold cyan]Enter the OSRS Wiki category to search")
 
 def create_layout():
     layout = Layout()

@@ -6,14 +6,22 @@ from components.item_database import load_item_database, get_item_id
 from components.file_operations import save_drops_to_file, create_output_file
 from components.ui import (
     create_header, create_layout, update_monsters_panel,
-    create_progress_bars, create_drops_table
+    create_progress_bars, create_drops_table, create_welcome_screen,
+    get_category_input
 )
 
 def main():
     console = Console()
-    item_db = load_item_database()
     
-    category = console.input("[bold cyan]Enter the OSRS Wiki category to search (e.g., 'Monsters'): [/bold cyan]")
+    # Display welcome screen
+    welcome_screen = create_welcome_screen()
+    console.print(welcome_screen)
+    console.input()
+    
+    # Get category input
+    category = get_category_input()
+    
+    item_db = load_item_database()
     monsters = get_category_members(category)
     
     layout = create_layout()
