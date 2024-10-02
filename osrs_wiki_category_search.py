@@ -5,12 +5,13 @@ import json
 from bs4 import BeautifulSoup
 import mwparserfromhell
 from rich.console import Console
-from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
+from rich.live import Live
 from rich.panel import Panel
 from rich.text import Text
 from rich.table import Table
 from rich.box import DOUBLE
 from rich.style import Style
+from rich.layout import Layout
 
 # Load the item database
 with open('assets/item-db.json', 'r') as f:
@@ -172,43 +173,47 @@ def main():
     category = console.input("[bold cyan]Enter the OSRS Wiki category to search (e.g., 'Monsters'): [/bold cyan]")
     monsters = get_category_members(category)
     
-    console.print(Panel(f"[bold green]Monsters in category '{category}'[/bold green]", border_style="green"))
+    layout = Layout()
+    layout.split(
+        Layout(name="header", size=3),
+        Layout(name="main", ratio=1)
+    )
+    layout["main"].split_row(
+        Layout(name="monster", ratio=1),
+        Layout(name="drops", ratio=2)
+    )
     
-    with Progress(
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        TaskProgressColumn(),
-        console=console
-    ) as progress:
-        task = progress.add_task(f"[cyan]Processing monsters...", total=len(monsters))
-        
-        for monster in monsters:
-            progress.update(task, advance=1, description=f"[cyan]Processing {monster}...")
+    layout["header"].update(Panel(f"[bold green]Monsters in category '{category}'[/bold green]", border_style="green"))
+    
+    monster_panel = Panel("", title="Monster", border_style="blue")
+    layout["monster"].update(monster_panel)
+    
+    drops_table = Table(title="Drop Table", box=DOUBLE, border_style="yellow", header_style="bold yellow")
+    drops_table.add_column("Item", style="green")
+    drops_table.add_column("ID", style="cyan")
+    layout["drops"].update(drops_table)
+    
+    with Live(layout, console=console, screen=True, refresh_per_second=4) as live:
+        for i, monster in enumerate(monsters, 1):
+            layout["header"].update(Panel(f"[bold green]Monsters in category '{category}' - Processing {i}/{len(monsters)}[/bold green]", border_style="green"))
+            layout["monster"].update(Panel(Text(monster, style="bold magenta"), title="Monster", border_style="blue"))
+            
             drops = get_monster_drops(monster, save_to_file=True)
             
-            monster_panel = Panel(
-                Text(monster, style="bold magenta"),
-                title="Monster",
-                border_style="blue",
-                expand=False
-            )
-            console.print(monster_panel)
+            drops_table = Table(title="Drop Table", box=DOUBLE, border_style="yellow", header_style="bold yellow")
+            drops_table.add_column("Item", style="green")
+            drops_table.add_column("ID", style="cyan")
             
             if drops:
-                table = Table(title="Drop Table", box=DOUBLE, border_style="yellow", header_style="bold yellow")
-                table.add_column("Item", style="green")
-                table.add_column("ID", style="cyan")
-                
                 for drop, item_id in drops:
                     id_str = str(item_id) if item_id is not None else "Not found"
                     id_style = "cyan" if item_id is not None else "red"
-                    table.add_row(drop, id_str, style=Style(color="green", dim=(item_id is None)))
-                
-                console.print(table)
+                    drops_table.add_row(drop, id_str, style=Style(color="green", dim=(item_id is None)))
             else:
-                console.print(Panel("[bold red]No drops found or unable to fetch drop table.[/bold red]", border_style="red"))
+                drops_table.add_row("No drops found", "N/A", style="red")
             
-            console.print()
+            layout["drops"].update(drops_table)
+            live.refresh()
 
 if __name__ == "__main__":
     main()
