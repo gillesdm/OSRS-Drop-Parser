@@ -1,4 +1,5 @@
 import requests
+import re
 from bs4 import BeautifulSoup
 import mwparserfromhell
 from osrs_scraper.utils.logging import log_api_response, log_parsed_data
