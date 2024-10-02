@@ -9,7 +9,6 @@ from rich.prompt import Prompt
 from rich.console import Group
 from rich.padding import Padding
 from rich.live import Live
-from rich.spinner import Spinner
 from art import text2art
 from prompt_toolkit import prompt
 from prompt_toolkit.shortcuts import PromptSession
@@ -109,10 +108,8 @@ def check_redirect(name: str) -> str:
     return name
 
 def create_warning_panel(original_name: str, redirected_name: str) -> Panel:
-    spinner = Spinner("dots", style="yellow")
     warning_text = Text()
-    warning_text.append(spinner, style="yellow")
-    warning_text.append(" Search redirected\n\n", style="bold yellow")
+    warning_text.append("Search redirected\n\n", style="bold yellow")
     warning_text.append(f"Your search for ", style="yellow")
     warning_text.append(f"'{original_name}' ", style="bold white")
     warning_text.append(f"was redirected to ", style="yellow")
