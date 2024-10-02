@@ -21,41 +21,79 @@ A powerful command-line tool to fetch and save drop tables for monsters in Old S
 - Python 3.7 or higher
 - pip (Python package installer)
 
-### Windows
+If you don't have Python installed, follow these steps:
 
-1. Open Command Prompt or PowerShell
-2. Clone the repository:
+#### Windows
+
+1. Download the latest Python installer from the [official Python website](https://www.python.org/downloads/windows/).
+2. Run the installer. Make sure to check the box that says "Add Python to PATH" during installation.
+3. Open Command Prompt and type `python --version` to verify the installation.
+
+#### macOS
+
+1. Install Homebrew if you haven't already:
+   ```
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+2. Install Python using Homebrew:
+   ```
+   brew install python
+   ```
+3. Open Terminal and type `python3 --version` to verify the installation.
+
+### Installing the OSRS Wiki Search Tool
+
+#### Windows
+
+1. Open Command Prompt
+2. Install Git if you haven't already:
+   ```
+   winget install --id Git.Git -e --source winget
+   ```
+3. Clone the repository:
    ```
    git clone https://github.com/yourusername/osrs-wiki-search-tool.git
    cd osrs-wiki-search-tool
    ```
-3. Create a virtual environment:
+4. Create a virtual environment:
    ```
    python -m venv venv
    venv\Scripts\activate
    ```
-4. Install the required packages:
+5. Install the required packages:
    ```
    pip install -r requirements.txt
    ```
 
-### macOS
+#### macOS
 
 1. Open Terminal
-2. Clone the repository:
+2. Install Git if you haven't already:
+   ```
+   brew install git
+   ```
+3. Clone the repository:
    ```
    git clone https://github.com/yourusername/osrs-wiki-search-tool.git
    cd osrs-wiki-search-tool
    ```
-3. Create a virtual environment:
+4. Create a virtual environment:
    ```
    python3 -m venv venv
    source venv/bin/activate
    ```
-4. Install the required packages:
+5. Install the required packages:
    ```
    pip install -r requirements.txt
    ```
+
+### Troubleshooting
+
+If you encounter any issues during installation:
+
+- Make sure your Python version is 3.7 or higher by running `python --version` (Windows) or `python3 --version` (macOS).
+- If you get a "command not found" error, make sure Python is added to your system's PATH.
+- If you have issues with pip, you may need to upgrade it: `python -m pip install --upgrade pip` (Windows) or `python3 -m pip install --upgrade pip` (macOS).
 
 ## Usage
 
