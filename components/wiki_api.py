@@ -127,18 +127,25 @@ def is_monster(entry):
         "prop": "text"
     }
     
-    response = requests.get(base_url, params=params)
-    log_api_response(entry, base_url, params, response)
-    
-    if response.status_code != 200:
+    try:
+        response = requests.get(base_url, params=params)
+        log_api_response(entry, base_url, params, response)
+        
+        if response.status_code != 200:
+            return False
+        
+        data = response.json()
+        
+        if 'error' in data:
+            return False
+        
+        if 'parse' not in data or 'text' not in data['parse']:
+            return False
+        
+        html_content = data['parse']['text']['*']
+        soup = BeautifulSoup(html_content, 'html.parser')
+        
+        return bool(soup.find('table', class_='infobox-monster'))
+    except Exception as e:
+        print(f"Error processing entry '{entry}': {str(e)}")
         return False
-    
-    data = response.json()
-    
-    if 'error' in data:
-        return False
-    
-    html_content = data['parse']['text']['*']
-    soup = BeautifulSoup(html_content, 'html.parser')
-    
-    return bool(soup.find('table', class_='infobox-monster'))

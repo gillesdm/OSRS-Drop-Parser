@@ -10,7 +10,9 @@ def log_data(category, data_type, data):
     """Log data to a file in the Logs directory."""
     ensure_log_directory()
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"Logs/{category}_{data_type}_{timestamp}.log"
+    # Remove any forward slashes from the category name
+    safe_category = category.replace('/', '_')
+    filename = f"Logs/{safe_category}_{data_type}_{timestamp}.log"
     
     with open(filename, 'w', encoding='utf-8') as f:
         if isinstance(data, str):
