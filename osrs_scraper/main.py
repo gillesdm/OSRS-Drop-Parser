@@ -188,12 +188,16 @@ Use the --sort option with --id to sort the item IDs from small to large.
                     # Use redirected_name if available, otherwise use the original monster name
                     monster_name = redirected_name or monster
                     
+                    # Update file_path with the redirected name if available
+                    if redirected_name:
+                        file_path = file_path.replace(search_input, redirected_name)
+                    
                     drops_with_ids = [(item, get_item_id(item, item_db)) for item in drops if item.lower() != "nothing"]
                     if args.banklayout:
                         monster_unique_ids = {get_item_id(item, item_db) for item, _ in drops_with_ids if get_item_id(item, item_db) is not None}
                         all_unique_ids.update(monster_unique_ids)
                     else:
-                        save_drops_to_file(search_input, monster_name, drops_with_ids, file_path.rsplit('.', 1)[0], args.txt, args.id, args.sort, False)
+                        save_drops_to_file(redirected_name or search_input, monster_name, drops_with_ids, file_path.rsplit('.', 1)[0], args.txt, args.id, args.sort, False)
                     
                     if not args.id and not args.banklayout:
                         drops_table = create_drops_table(drops_with_ids)
