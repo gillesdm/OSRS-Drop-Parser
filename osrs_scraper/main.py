@@ -37,6 +37,7 @@ def main():
         epilog="Example usage: python osrs_scraper/main.py --logs"
     )
     parser.add_argument("--logs", action="store_true", help="Enable logging of API responses and parsed data (default: disabled)")
+    parser.add_argument("--txt", action="store_true", help="Output drop tables as a txt file (default: disabled)")
     args = parser.parse_args()
 
     remove_existing_logs()
@@ -111,7 +112,7 @@ def main():
         for monster in monsters:
             drops = get_monster_drops(monster)
             drops_with_ids = [(item, get_item_id(item, item_db)) for item in drops if item.lower() != "nothing"]
-            save_drops_to_file(category, monster, drops_with_ids, file_path)
+            save_drops_to_file(category, monster, drops_with_ids, file_path, args.txt)
             
             drops_table = create_drops_table(drops_with_ids)
             update_layout(layout, category, monsters, console.height, completed_steps, monster, drops_table, progress_bars=(monster_progress, drop_progress))
