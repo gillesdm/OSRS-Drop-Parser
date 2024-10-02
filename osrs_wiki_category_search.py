@@ -17,6 +17,9 @@ from rich.layout import Layout
 with open('assets/item-db.json', 'r') as f:
     item_db = json.load(f)
 
+def create_header():
+    return Panel("OSRS Scraper by @demuynckgilles", border_style="bold green")
+
 def get_item_id(item_name):
     """
     Look up the item ID for a given item name.
@@ -175,6 +178,7 @@ def main():
     
     layout = Layout()
     layout.split(
+        Layout(name="title", size=3),
         Layout(name="header", size=3),
         Layout(name="main", ratio=1)
     )
@@ -183,6 +187,7 @@ def main():
         Layout(name="drops", ratio=2)
     )
     
+    layout["title"].update(create_header())
     layout["header"].update(Panel(f"[bold green]Monsters in category '{category}'[/bold green]", border_style="green"))
     
     monster_panel = Panel("", title="Monster", border_style="blue")
