@@ -4,6 +4,10 @@ import os
 import json
 from bs4 import BeautifulSoup
 import mwparserfromhell
+from rich.console import Console
+from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
+from rich.panel import Panel
+from rich.text import Text
 
 # Load the item database
 with open('assets/item-db.json', 'r') as f:
@@ -160,23 +164,53 @@ def save_drops_to_file(monster_name, drops):
     print(f"Drop table for {monster_name} saved to {file_path}")
 
 def main():
-    category = input("Enter the OSRS Wiki category to search (e.g., 'Monsters'): ")
+    console = Console()
+    
+    category = console.input("[bold cyan]Enter the OSRS Wiki category to search (e.g., 'Monsters'): [/bold cyan]")
     monsters = get_category_members(category)
     
-    print(f"\nMonsters in category '{category}':")
-    for monster in monsters:
-        print(f"- {monster}")
-        drops = get_monster_drops(monster, save_to_file=True)
-        if drops:
-            print(f"  Drops ({len(drops)} items):")
-            for drop, item_id in drops:
-                if item_id is not None:
-                    print(f"    - {drop} (ID: {item_id})")
-                else:
-                    print(f"    - {drop} (ID: Not found)")
-        else:
-            print("  No drops found or unable to fetch drop table.")
-        print()
+    console.print(Panel(f"[bold green]Monsters in category '{category}'[/bold green]"))
+    
+    with Progress(
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TaskProgressColumn(),
+        console=console
+    ) as progress:
+        task = progress.add_task(f"[cyan]Processing monsters...", total=len(monsters))
+        
+        for monster in monsters:
+            progress.update(task, advance=1, description=f"[cyan]Processing {monster}...")
+            drops = get_monster_drops(monster, save_to_file=True)
+            
+            monster_panel = Panel(
+                Text(monster, style="bold magenta"),
+                title="Monster",
+                border_style="blue"
+            )
+            console.print(monster_panel)
+            
+            if drops:
+                drops_text = Text()
+                drops_text.append(f"Drops ({len(drops)} items):\n", style="bold yellow")
+                for drop, item_id in drops:
+                    if item_id is not None:
+                        drops_text.append(f"  - {drop} ", style="green")
+                        drops_text.append(f"(ID: {item_id})\n", style="cyan")
+                    else:
+                        drops_text.append(f"  - {drop} ", style="green")
+                        drops_text.append("(ID: Not found)\n", style="red")
+                
+                drops_panel = Panel(
+                    drops_text,
+                    title="Drop Table",
+                    border_style="yellow"
+                )
+                console.print(drops_panel)
+            else:
+                console.print("[bold red]No drops found or unable to fetch drop table.[/bold red]")
+            
+            console.print()
 
 if __name__ == "__main__":
     main()
