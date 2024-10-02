@@ -56,7 +56,7 @@ def get_monster_drops(monster_name: str) -> list[str]:
         # Check for redirect
         redirect_match = re.search(r'<ul class="redirectText">.*?<a href="/w/(.*?)"', response.text)
         if redirect_match:
-            redirect_page = redirect_match.group(1).replace('_', ' ')
+            redirect_page = redirect_match.group(1).replace('_', ' ').replace('%27', "'")
             print(f"Redirecting to: {redirect_page}")
             return get_monster_drops(redirect_page)
         return []
