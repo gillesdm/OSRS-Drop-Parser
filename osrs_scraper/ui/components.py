@@ -73,16 +73,9 @@ def get_input(console: Console, input_type: str) -> str:
     input_text.append(f"Enter the OSRS Wiki {input_type} to search:\n\n", style="bold cyan")
     
     if input_type == "category":
-        categories = [
-            "Monsters", "Slayer monsters", "Boss monsters", "Wilderness monsters",
-            "Dagannoth Kings", "God Wars Dungeon bosses", "Raid bosses",
-            "Barrows brothers", "Revenants", "Slayer bosses", "Demi-bosses",
-            "Skilling bosses", "Quest monsters", "Minigame monsters"
-        ]
-        input_text.append("Example categories (enter the number or type your own):\n", style="cyan")
-        for i, category in enumerate(categories, 1):
-            input_text.append(f"{i}. {category}\n", style="green")
-        input_text.append("\n")
+        input_text.append("You can find all valid categories at:\n", style="cyan")
+        input_text.append("https://oldschool.runescape.wiki/w/Special:Categories\n\n", style="bold blue underline")
+        input_text.append("Warning: Not all categories will contain item drops.\n\n", style="bold yellow")
     else:
         input_text.append("Enter the name of the monster (e.g., 'Zulrah', 'Abyssal demon'):\n\n")
 
@@ -96,11 +89,6 @@ def get_input(console: Console, input_type: str) -> str:
 
     console.print(input_panel)
     user_input = Prompt.ask(input_type.capitalize())
-    
-    if input_type == "category" and user_input.isdigit():
-        index = int(user_input) - 1
-        if 0 <= index < len(categories):
-            user_input = categories[index]
     
     # Simulating a redirect (you'll need to implement the actual redirect check)
     redirected_name = check_redirect(user_input)
