@@ -33,11 +33,39 @@ def remove_existing_logs():
 
 def main():
     parser = argparse.ArgumentParser(
-        description="OSRS Wiki Category Search - A tool to fetch and save drop tables for monsters in a specified Old School RuneScape Wiki category.",
-        epilog="Example usage: python osrs_scraper/main.py --logs"
+        description="OSRS Wiki Category Search",
+        epilog="Example usage: python osrs_scraper/main.py --logs --txt",
+        formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    parser.add_argument("--logs", action="store_true", help="Enable logging of API responses and parsed data (default: disabled)")
-    parser.add_argument("--txt", action="store_true", help="Output drop tables as a txt file (default: disabled)")
+    parser.add_argument(
+        "--logs",
+        action="store_true",
+        help="Enable logging of API responses and parsed data"
+    )
+    parser.add_argument(
+        "--txt",
+        action="store_true",
+        help="Output drop tables as a txt file in addition to JSON"
+    )
+    
+    # Add a more detailed description
+    parser.description = """
+OSRS Wiki Category Search
+
+A tool to fetch and save drop tables for monsters in a specified
+Old School RuneScape Wiki category.
+
+This script allows you to:
+1. Search for monsters within a specific OSRS Wiki category
+2. Fetch drop tables for all monsters in that category
+3. Save the drop tables in JSON format (always)
+4. Optionally save the drop tables in TXT format
+5. Display progress and results in a rich, interactive console interface
+
+Use the --logs option to enable detailed logging for debugging.
+Use the --txt option to save drop tables in both JSON and TXT formats.
+    """
+    
     args = parser.parse_args()
 
     remove_existing_logs()
