@@ -53,6 +53,12 @@ def get_monster_drops(monster_name: str) -> list[str]:
     
     if 'error' in data:
         print(f"Error fetching data for {monster_name}: {data['error']['info']}")
+        # Check for redirect
+        redirect_match = re.search(r'<ul class="redirectText">.*?<a href="/w/(.*?)"', response.text)
+        if redirect_match:
+            redirect_page = redirect_match.group(1).replace('_', ' ')
+            print(f"Redirecting to: {redirect_page}")
+            return get_monster_drops(redirect_page)
         return []
     
     html_content = data['parse']['text']['*']
