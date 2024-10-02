@@ -2,6 +2,7 @@ import requests
 import re
 import os
 import json
+from datetime import datetime
 from bs4 import BeautifulSoup
 import mwparserfromhell
 from rich.console import Console
@@ -157,19 +158,23 @@ def save_drops_to_file(monster_name, drops):
     """
     Save the drop table for a given monster to a local file.
     """
-    file_name = f"{monster_name.replace(' ', '_')}_drops.txt"
-    file_path = os.path.join("drop_tables", file_name)
+    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+    file_name = f"droplist_{current_time}.txt"
+    folder_path = "Droplists"
+    file_path = os.path.join(folder_path, file_name)
     
-    os.makedirs("drop_tables", exist_ok=True)
+    os.makedirs(folder_path, exist_ok=True)
     
-    with open(file_path, "w") as file:
+    with open(file_path, "a") as file:
+        file.write(f"Drop table for {monster_name}:\n")
         for drop, item_id in drops:
             if item_id is not None:
                 file.write(f"{drop} (ID: {item_id})\n")
             else:
                 file.write(f"{drop} (ID: Not found)\n")
+        file.write("\n")  # Add a blank line between monsters
     
-    print(f"Drop table for {monster_name} saved to {file_path}")
+    print(f"Drop table for {monster_name} appended to {file_path}")
 
 def main():
     console = Console()
