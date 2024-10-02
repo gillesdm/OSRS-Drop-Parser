@@ -173,11 +173,13 @@ Use the --sort option with --id to sort the item IDs from small to large.
         for monster in monsters:
             drops = get_monster_drops(monster)
             drops_with_ids = [(item, get_item_id(item, item_db)) for item in drops if item.lower() != "nothing"]
-            monster_unique_ids = save_drops_to_file(search_input, monster, drops_with_ids, file_path.rsplit('.', 1)[0], args.txt, args.id, args.sort, args.banklayout)
             if args.banklayout:
+                monster_unique_ids = {get_item_id(item, item_db) for item, _ in drops_with_ids if get_item_id(item, item_db) is not None}
                 all_unique_ids.update(monster_unique_ids)
+            else:
+                save_drops_to_file(search_input, monster, drops_with_ids, file_path.rsplit('.', 1)[0], args.txt, args.id, args.sort, False)
             
-            if not args.id:
+            if not args.id and not args.banklayout:
                 drops_table = create_drops_table(drops_with_ids)
                 update_layout(layout, search_input, monsters, console.height, completed_steps, monster, drops_table, progress_bars=(monster_progress, drop_progress))
             drop_progress.update(drop_task, advance=1)
@@ -194,11 +196,11 @@ Use the --sort option with --id to sort the item IDs from small to large.
         update_layout(layout, search_input, monsters, console.height, completed_steps, progress_bars=(monster_progress, drop_progress))
         live.refresh()
     
-    if args.id:
+    if args.id and not args.banklayout:
         console.print(f"\n[green]Item IDs for {'all monsters in category' if search_type == 'category' else 'monster'} '{search_input}' have been saved to {file_path.rsplit('.', 1)[0]}_ids.txt")
     if args.banklayout:
         console.print(f"[green]RuneLite bank layout for {'category' if search_type == 'category' else 'monster'} '{search_input}' has been saved to {file_path.rsplit('.', 1)[0]}_banklayout.txt")
-    if not args.id:
+    if not args.id and not args.banklayout:
         console.print(f"\n[green]Drop tables for {'all monsters in category' if search_type == 'category' else 'monster'} '{search_input}' have been saved to {file_path}")
 
 if __name__ == "__main__":
