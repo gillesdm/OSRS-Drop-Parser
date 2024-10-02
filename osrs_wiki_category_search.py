@@ -182,27 +182,29 @@ def main():
         Layout(name="main", ratio=1)
     )
     layout["main"].split_row(
-        Layout(name="monster", ratio=1),
-        Layout(name="drops", ratio=2)
+        Layout(name="drops", ratio=1),
+        Layout(name="monsters", ratio=1)
     )
     
     layout["title"].update(create_header())
     
-    monster_panel = Panel("", title="Monster", border_style="blue")
-    layout["monster"].update(monster_panel)
-    
     drops_table = Table(title="Drop Table", box=DOUBLE, border_style="yellow", header_style="bold yellow")
     drops_table.add_column("Item", style="green")
     drops_table.add_column("ID", style="cyan")
-    layout["drops"].update(drops_table)
+    layout["drops"].update(Panel(drops_table, title="Drops", border_style="yellow"))
+    
+    monsters_table = Table(title="Monsters", box=DOUBLE, border_style="blue", header_style="bold blue")
+    monsters_table.add_column("Monster", style="magenta")
+    layout["monsters"].update(Panel(monsters_table, title="Monsters", border_style="blue"))
     
     with Live(layout, console=console, screen=True, refresh_per_second=4) as live:
         for i, monster in enumerate(monsters, 1):
-            layout["monster"].update(Panel(Text(monster, style="bold magenta"), title="Monster", border_style="blue"))
+            monsters_table.add_row(monster)
+            layout["monsters"].update(Panel(monsters_table, title="Monsters", border_style="blue"))
             
             drops = get_monster_drops(monster, save_to_file=True)
             
-            drops_table = Table(title="Drop Table", box=DOUBLE, border_style="yellow", header_style="bold yellow")
+            drops_table.clear()
             drops_table.add_column("Item", style="green")
             drops_table.add_column("ID", style="cyan")
             
@@ -214,7 +216,7 @@ def main():
             else:
                 drops_table.add_row("No drops found", "N/A", style="red")
             
-            layout["drops"].update(drops_table)
+            layout["drops"].update(Panel(drops_table, title=f"Drops for {monster}", border_style="yellow"))
             live.refresh()
 
 if __name__ == "__main__":
