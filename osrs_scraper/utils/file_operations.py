@@ -60,9 +60,13 @@ def save_banklayout(category: str, all_unique_ids: Set[int], file_path: str, sor
         unique_ids.sort()
     with open(banklayout_file_path, "w") as banklayout_file:
         banklayout_content = f"banktaglayoutsplugin:{category.lower()},"
-        banklayout_content += ','.join(f"{id}:{i}" for i, id in enumerate(unique_ids))
+        if unique_ids:
+            banklayout_content += f"{unique_ids[0]}:0,"  # Add the first item twice
+            banklayout_content += ','.join(f"{id}:{i+1}" for i, id in enumerate(unique_ids))
         banklayout_content += f",banktag:{category.lower()},"
-        banklayout_content += ','.join(map(str, unique_ids))
+        if unique_ids:
+            banklayout_content += f"{unique_ids[0]},"  # Add the first item twice
+            banklayout_content += ','.join(map(str, unique_ids))
         banklayout_file.write(banklayout_content)
 
 def create_output_file(category: str) -> str:
