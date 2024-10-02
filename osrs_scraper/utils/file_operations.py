@@ -2,7 +2,7 @@ import os
 import os
 import json
 from datetime import datetime
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Set
 
 def save_drops_to_file(category: str, monster_name: str, drops: List[Tuple[str, Optional[int]]], file_path: str, txt_output: bool = False, id_only: bool = False, sort_ids: bool = False, banklayout: bool = False) -> None:
     """Save the drop table for a given monster to a single file for the category."""

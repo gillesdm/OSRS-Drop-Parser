@@ -14,7 +14,7 @@ from rich.progress import Progress, TaskID
 
 from osrs_scraper.api.wiki_api import get_category_members, get_monster_drops, is_monster
 from osrs_scraper.data.item_database import load_item_database, get_item_id
-from osrs_scraper.utils.file_operations import save_drops_to_file, create_output_file
+from osrs_scraper.utils.file_operations import save_drops_to_file, create_output_file, save_banklayout
 from osrs_scraper.utils.logging import log_parsed_data, set_logging
 from osrs_scraper.ui.components import (
     create_welcome_screen,
