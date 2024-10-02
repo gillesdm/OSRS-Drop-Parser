@@ -5,6 +5,8 @@ from datetime import datetime
 from typing import List, Tuple, Optional, Set
 
 def save_drops_to_file(category: str, monster_name: str, drops: List[Tuple[str, Optional[int]]], file_path: str, txt_output: bool = False, id_only: bool = False, sort_ids: bool = False, banklayout: bool = False) -> None:
+    # Use monster_name for the file name instead of category
+    file_path = file_path.replace(category, monster_name)
     """Save the drop table for a given monster to a single file for the category."""
     # Save to JSON (always)
     json_file_path = file_path.rsplit('.', 1)[0] + '.json'

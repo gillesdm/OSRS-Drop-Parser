@@ -1,0 +1,35 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+- New CHANGELOG.md file to track changes in the project
+- LICENSE file with MIT License
+
+## [0.1.0] - 2023-04-15
+
+### Added
+- Initial release of the OSRS Wiki Search Tool
+- Search for monsters within a specific OSRS Wiki category or search for a specific monster
+- Fetch drop tables for all monsters in a category or for a specific monster
+- Save drop tables in JSON format
+- Option to save drop tables in TXT format
+- Option to save only item IDs as a comma-separated list
+- Create RuneLite bank layout files
+- Display progress and results in a rich, interactive console interface
+
+### Changed
+- Enhanced error handling and user feedback for better user experience
+
+### Removed
+- Dependency on `rich-spinner` package for simpler installation and usage
+
+## [0.0.1] - 2023-04-01
+
+### Added
+- Project setup and initial codebase

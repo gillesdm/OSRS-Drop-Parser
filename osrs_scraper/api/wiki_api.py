@@ -1,4 +1,5 @@
 import requests
+import re
 from bs4 import BeautifulSoup
 import mwparserfromhell
 from osrs_scraper.utils.logging import log_api_response, log_parsed_data
@@ -52,7 +53,20 @@ def get_monster_drops(monster_name: str) -> list[str]:
     
     if 'error' in data:
         print(f"Error fetching data for {monster_name}: {data['error']['info']}")
+        # Check for redirect
+        redirect_match = re.search(r'<ul class="redirectText">.*?<a href="/w/(.*?)"', response.text)
+        if redirect_match:
+            redirect_page = redirect_match.group(1).replace('_', ' ').replace('%27', "'")
+            print(f"Redirecting to: {redirect_page}")
+            return get_monster_drops(redirect_page)
         return []
+    
+    # Check for redirect in successful responses as well
+    redirect_match = re.search(r'<div class="redirectMsg">.*?<a href="/w/(.*?)"', data['parse']['text']['*'])
+    if redirect_match:
+        redirect_page = redirect_match.group(1).replace('_', ' ').replace('%27', "'")
+        print(f"Redirecting to: {redirect_page}")
+        return get_monster_drops(redirect_page), redirect_page
     
     html_content = data['parse']['text']['*']
     wikitext_content = data['parse']['wikitext']['*']
