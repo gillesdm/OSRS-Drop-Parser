@@ -32,15 +32,15 @@ def create_layout() -> Layout:
 def create_header() -> Panel:
     return Panel("OSRS Scraper by @demuynckgilles", border_style="bold green")
 
-def create_steps_panel(current_step: int) -> Panel:
+def create_steps_panel(completed_steps: list[bool]) -> Panel:
     steps = [
         "1. Looking for monsters",
         "2. Fetching drops",
         "3. Saving data"
     ]
     step_renderable = "\n".join([
-        f"[{'green' if i + 1 <= current_step else 'dim'}]{step}[/]"
-        for i, step in enumerate(steps)
+        f"[{'green' if completed else 'dim'}]{step}[/]"
+        for step, completed in zip(steps, completed_steps)
     ])
     return Panel(step_renderable, title="Progress", border_style="cyan", expand=True)
 
@@ -58,9 +58,9 @@ def create_progress_bar() -> Progress:
         TextColumn("[progress.completed]{task.completed:>3}/{task.total}")
     )
 
-def update_layout(layout: Layout, category: str, monsters: list, console_height: int, current_monster: str = None, drops_table = None, progress_bars: tuple = None) -> None:
+def update_layout(layout: Layout, category: str, monsters: list, console_height: int, completed_steps: list[bool], current_monster: str = None, drops_table = None, progress_bars: tuple = None) -> None:
     layout["title"].update(create_header())
-    layout["steps"].update(create_steps_panel(2 if current_monster else 1))
+    layout["steps"].update(create_steps_panel(completed_steps))
     
     if not monsters:
         layout["monster_search"].update(Panel(f"[red]No monsters found in the category '{category}'.[/red]", title="Monster Search", border_style="cyan"))
