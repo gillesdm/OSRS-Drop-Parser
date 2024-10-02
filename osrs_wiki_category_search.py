@@ -226,8 +226,10 @@ def main():
             save_drops_to_file(category, monster, drops, file_path)
             progress_drops.update(task_drops, total=total_drops, completed=total_drops)
             
-            # Update the monster name to green in the monsters list
-            monsters_list.stylize(f"green", start=monsters_list.plain.index(monster), end=monsters_list.plain.index(monster) + len(monster))
+            # Update the monster name to green and add a checkmark in the monsters list
+            monster_index = monsters_list.plain.index(monster)
+            monsters_list.stylize(f"green", start=monster_index, end=monster_index + len(monster))
+            monsters_list.insert(monster_index, "✓ ")
             layout["monsters"].update(Panel(monsters_list, title="Monsters", border_style="blue"))
             
             drops_table = Table(title="Drop Table", box=DOUBLE, border_style="yellow", header_style="bold yellow")
