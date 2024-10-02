@@ -177,6 +177,9 @@ The tool will create output files in the `osrs_scraper/Output` directory. Depend
 
 ## 🆕 Recent Updates
 
+For a detailed list of changes, please see the [CHANGELOG.md](CHANGELOG.md) file.
+
+Recent highlights include:
 - Added a new feature to warn users when their search is redirected to a different name.
 - Improved the user interface with a more interactive search type selection.
 - Enhanced error handling and user feedback for better user experience.
