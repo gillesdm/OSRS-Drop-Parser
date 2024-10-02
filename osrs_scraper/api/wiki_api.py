@@ -66,7 +66,7 @@ def get_monster_drops(monster_name: str) -> list[str]:
     if redirect_match:
         redirect_page = redirect_match.group(1).replace('_', ' ').replace('%27', "'")
         print(f"Redirecting to: {redirect_page}")
-        return get_monster_drops(redirect_page)
+        return get_monster_drops(redirect_page), redirect_page
     
     html_content = data['parse']['text']['*']
     wikitext_content = data['parse']['wikitext']['*']

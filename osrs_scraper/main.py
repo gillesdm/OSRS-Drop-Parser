@@ -179,21 +179,25 @@ Use the --sort option with --id to sort the item IDs from small to large.
                 all_unique_ids = set()
                 monster_not_found = False
                 for monster in monsters:
-                    drops = get_monster_drops(monster)
+                    drops, redirected_name = get_monster_drops(monster)
                     if not drops:
                         console.print(f"[bold red]Error: Monster '{monster}' not found or has no drops.[/bold red]")
                         monster_not_found = True
                         break
+                    
+                    # Use redirected_name if available, otherwise use the original monster name
+                    monster_name = redirected_name or monster
+                    
                     drops_with_ids = [(item, get_item_id(item, item_db)) for item in drops if item.lower() != "nothing"]
                     if args.banklayout:
                         monster_unique_ids = {get_item_id(item, item_db) for item, _ in drops_with_ids if get_item_id(item, item_db) is not None}
                         all_unique_ids.update(monster_unique_ids)
                     else:
-                        save_drops_to_file(search_input, monster, drops_with_ids, file_path.rsplit('.', 1)[0], args.txt, args.id, args.sort, False)
+                        save_drops_to_file(search_input, monster_name, drops_with_ids, file_path.rsplit('.', 1)[0], args.txt, args.id, args.sort, False)
                     
                     if not args.id and not args.banklayout:
                         drops_table = create_drops_table(drops_with_ids)
-                        update_layout(layout, search_input, monsters, console.height, completed_steps, monster, drops_table, progress_bars=(monster_progress, drop_progress))
+                        update_layout(layout, search_input, monsters, console.height, completed_steps, monster_name, drops_table, progress_bars=(monster_progress, drop_progress))
                     drop_progress.update(drop_task, advance=1)
                     live.refresh()
                 
