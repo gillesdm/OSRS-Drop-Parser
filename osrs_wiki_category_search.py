@@ -27,7 +27,20 @@ def main():
     
     item_db = load_item_database()
     all_entries = get_category_members(category)
-    monsters = [entry for entry in all_entries if is_monster(entry)]
+    
+    monsters = []
+    progress_check = Progress(
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%")
+    )
+    
+    with progress_check as progress:
+        check_task = progress.add_task("[cyan]Checking for monsters...", total=len(all_entries))
+        for entry in all_entries:
+            if is_monster(entry):
+                monsters.append(entry)
+            progress.update(check_task, advance=1)
     
     log_parsed_data(category, "filtered_monsters", monsters)
     

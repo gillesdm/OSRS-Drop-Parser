@@ -117,10 +117,28 @@ def parse_drop_template(template):
 
 def is_monster(entry):
     """
-    Check if a given entry is likely to be a monster.
+    Check if a given entry is a monster by looking for the "infobox-monster" table.
     """
-    lower_entry = entry.lower()
-    return (
-        "monster" in lower_entry or
-        not any(keyword in lower_entry for keyword in ["category", "list", "template", "module"])
-    )
+    base_url = "https://oldschool.runescape.wiki/api.php"
+    params = {
+        "action": "parse",
+        "page": entry,
+        "format": "json",
+        "prop": "text"
+    }
+    
+    response = requests.get(base_url, params=params)
+    log_api_response(entry, base_url, params, response)
+    
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    
+    if 'error' in data:
+        return False
+    
+    html_content = data['parse']['text']['*']
+    soup = BeautifulSoup(html_content, 'html.parser')
+    
+    return bool(soup.find('table', class_='infobox-monster'))
