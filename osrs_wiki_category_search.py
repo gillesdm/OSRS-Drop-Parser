@@ -28,6 +28,10 @@ def main():
     all_entries = get_category_members(category)
     monsters = [entry for entry in all_entries if is_monster(entry)]
     
+    if not monsters:
+        console.print(f"[red]No monsters found in the category '{category}'.[/red]")
+        return
+
     layout = create_layout()
     layout["title"].update(create_header())
     

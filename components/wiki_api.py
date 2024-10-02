@@ -112,6 +112,10 @@ def parse_drop_template(template):
 
 def is_monster(entry):
     """
-    Check if a given entry is a monster.
+    Check if a given entry is likely to be a monster.
     """
-    return "monster" in entry.lower()
+    lower_entry = entry.lower()
+    return (
+        "monster" in lower_entry or
+        not any(keyword in lower_entry for keyword in ["category", "list", "template", "module"])
+    )
