@@ -3,6 +3,7 @@ import re
 import os
 import json
 from bs4 import BeautifulSoup
+import mwparserfromhell
 
 def get_category_members(category_name):
     """
@@ -45,7 +46,7 @@ def get_monster_drops(monster_name, save_to_file=False):
         "action": "parse",
         "page": monster_name,
         "format": "json",
-        "prop": "text",
+        "prop": "text|wikitext",
         "contentmodel": "wikitext"
     }
     
@@ -62,34 +63,57 @@ def get_monster_drops(monster_name, save_to_file=False):
         return []
     
     html_content = data['parse']['text']['*']
-    soup = BeautifulSoup(html_content, 'html.parser')
+    wikitext_content = data['parse']['wikitext']['*']
     
-    drops = []
-    drops_tables = soup.find_all('table', class_='item-drops')
-    
-    for table in drops_tables:
-        for row in table.find_all('tr')[1:]:  # Skip header row
-            item_cell = row.find('td', class_='item-drop-name')
-            if item_cell:
-                item_name = item_cell.find('a')
-                if item_name:
-                    item_name = item_name.text.strip()
-                    drops.append(item_name)
+    drops = parse_drops(html_content)
     
     if not drops:
-        # Try to find drops in the infobox
-        infobox = soup.find('table', class_='infobox')
-        if infobox:
-            drops_row = infobox.find('th', string='Drops')
-            if drops_row:
-                drops_cell = drops_row.find_next_sibling('td')
-                if drops_cell:
-                    for item in drops_cell.find_all('a'):
-                        drops.append(item.text.strip())
+        drops = parse_wikitext_drops(wikitext_content)
     
     if save_to_file:
         save_drops_to_file(monster_name, drops)
     
+    return drops
+
+def parse_drops(content):
+    soup = BeautifulSoup(content, 'html.parser')
+    drops_tables = soup.find_all('table', class_='item-drops')
+    drops = []
+
+    for drops_table in drops_tables:
+        rows = drops_table.find_all('tr')
+        for row in rows[1:]:  # Skip the header row
+            cells = row.find_all('td')
+            if len(cells) >= 2:
+                item_name = cells[1].text.strip()
+                drops.append(item_name)
+
+    return list(set(drops))  # Remove duplicates
+
+def parse_wikitext_drops(content):
+    wikicode = mwparserfromhell.parse(content)
+    templates = wikicode.filter_templates()
+    drops = []
+
+    for template in templates:
+        if template.name.strip().lower() == "droptable":
+            drops.extend(parse_drop_template(template))
+
+    return list(set(drops))  # Remove duplicates
+
+def parse_drop_template(template):
+    drops = []
+    for param in template.params:
+        param_name = param.name.strip().lower()
+        if param_name.isdigit() or param_name in ["item", "item1", "item2", "item3", "item4", "item5"]:
+            item_info = str(param.value).strip().split('|')
+            item_name = item_info[0].strip()
+            if item_name and not item_name.startswith("{{"):
+                drops.append(item_name)
+        elif param_name in ["droptable", "subtable"]:
+            nested_template = mwparserfromhell.parse(str(param.value)).filter_templates()
+            if nested_template:
+                drops.extend(parse_drop_template(nested_template[0]))
     return drops
 
 def save_drops_to_file(monster_name, drops):
