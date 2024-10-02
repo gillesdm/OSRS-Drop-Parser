@@ -32,8 +32,11 @@ def remove_existing_logs():
         shutil.rmtree(log_dir)
 
 def main():
-    parser = argparse.ArgumentParser(description="OSRS Wiki Category Search")
-    parser.add_argument("--logs", action="store_true", help="Enable logging")
+    parser = argparse.ArgumentParser(
+        description="OSRS Wiki Category Search - A tool to fetch and save drop tables for monsters in a specified Old School RuneScape Wiki category.",
+        epilog="Example usage: python osrs_scraper/main.py --logs"
+    )
+    parser.add_argument("--logs", action="store_true", help="Enable logging of API responses and parsed data (default: disabled)")
     args = parser.parse_args()
 
     remove_existing_logs()
