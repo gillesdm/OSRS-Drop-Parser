@@ -128,83 +128,80 @@ Use the --sort option with --id to sort the item IDs from small to large.
             update_layout(layout, search_input, [], console.height, completed_steps)
             live.refresh()
 
-            if search_type == "category":
-                all_entries = get_category_members(search_input)
-                completed_steps[1] = True  # Fetching category members
-                update_layout(layout, search_input, [], console.height, completed_steps)
-                live.refresh()
+            while True:
+                if search_type == "category":
+                    all_entries = get_category_members(search_input)
+                    completed_steps[1] = True  # Fetching category members
+                    update_layout(layout, search_input, [], console.height, completed_steps)
+                    live.refresh()
 
-                if not all_entries:
-                    console.print(f"[bold red]Error: Category '{search_input}' not found or empty.[/bold red]")
-                    retry = console.input("[yellow]Would you like to try again? (y/n): [/yellow]").lower()
-                    if retry != 'y':
-                        return
-                    continue
+                    if not all_entries:
+                        console.print(f"[bold red]Error: Category '{search_input}' not found or empty.[/bold red]")
+                        search_input = get_input(console, search_type)
+                        continue
 
-                monster_progress = Progress()
-                drop_progress = Progress()
-                monster_task = monster_progress.add_task("[cyan]Filtering monsters...", total=len(all_entries))
-                
-                monsters = []
-                for entry in all_entries:
-                    if is_monster(entry):
-                        monsters.append(entry)
-                    monster_progress.update(monster_task, advance=1)
+                    monster_progress = Progress()
+                    drop_progress = Progress()
+                    monster_task = monster_progress.add_task("[cyan]Filtering monsters...", total=len(all_entries))
+                    
+                    monsters = []
+                    for entry in all_entries:
+                        if is_monster(entry):
+                            monsters.append(entry)
+                        monster_progress.update(monster_task, advance=1)
+                        update_layout(layout, search_input, monsters, console.height, completed_steps, progress_bars=(monster_progress, drop_progress))
+                        live.refresh()
+                    
+                    completed_steps[2] = True  # Filtering monsters
                     update_layout(layout, search_input, monsters, console.height, completed_steps, progress_bars=(monster_progress, drop_progress))
                     live.refresh()
+                    
+                    if args.logs:
+                        log_parsed_data(search_input, "filtered_monsters", monsters)
+                    
+                    if not monsters:
+                        console.print(f"[bold red]Error: No monsters found in category '{search_input}'.[/bold red]")
+                        search_input = get_input(console, search_type)
+                        continue
+                else:
+                    monsters = [search_input]
+                    completed_steps[1] = True
+                    completed_steps[2] = True
+                    monster_progress = Progress()
+                    drop_progress = Progress()
                 
-                completed_steps[2] = True  # Filtering monsters
+                drop_task = drop_progress.add_task("[yellow]Fetching drops...", total=len(monsters))
+                
+                completed_steps[3] = True  # Fetching drop tables
                 update_layout(layout, search_input, monsters, console.height, completed_steps, progress_bars=(monster_progress, drop_progress))
                 live.refresh()
-                
-                if args.logs:
-                    log_parsed_data(search_input, "filtered_monsters", monsters)
-                
-                if not monsters:
-                    console.print(f"[bold red]Error: No monsters found in category '{search_input}'.[/bold red]")
-                    retry = console.input("[yellow]Would you like to try again? (y/n): [/yellow]").lower()
-                    if retry != 'y':
-                        return
-                    continue
-            else:
-                monsters = [search_input]
-                completed_steps[1] = True
-                completed_steps[2] = True
-                monster_progress = Progress()
-                drop_progress = Progress()
-            
-            drop_task = drop_progress.add_task("[yellow]Fetching drops...", total=len(monsters))
-            
-            completed_steps[3] = True  # Fetching drop tables
-            update_layout(layout, search_input, monsters, console.height, completed_steps, progress_bars=(monster_progress, drop_progress))
-            live.refresh()
 
-            all_unique_ids = set()
-            monster_not_found = False
-            for monster in monsters:
-                drops = get_monster_drops(monster)
-                if not drops:
-                    console.print(f"[bold red]Error: Monster '{monster}' not found or has no drops.[/bold red]")
-                    monster_not_found = True
-                    break
-                drops_with_ids = [(item, get_item_id(item, item_db)) for item in drops if item.lower() != "nothing"]
-                if args.banklayout:
-                    monster_unique_ids = {get_item_id(item, item_db) for item, _ in drops_with_ids if get_item_id(item, item_db) is not None}
-                    all_unique_ids.update(monster_unique_ids)
-                else:
-                    save_drops_to_file(search_input, monster, drops_with_ids, file_path.rsplit('.', 1)[0], args.txt, args.id, args.sort, False)
+                all_unique_ids = set()
+                monster_not_found = False
+                for monster in monsters:
+                    drops = get_monster_drops(monster)
+                    if not drops:
+                        console.print(f"[bold red]Error: Monster '{monster}' not found or has no drops.[/bold red]")
+                        monster_not_found = True
+                        break
+                    drops_with_ids = [(item, get_item_id(item, item_db)) for item in drops if item.lower() != "nothing"]
+                    if args.banklayout:
+                        monster_unique_ids = {get_item_id(item, item_db) for item, _ in drops_with_ids if get_item_id(item, item_db) is not None}
+                        all_unique_ids.update(monster_unique_ids)
+                    else:
+                        save_drops_to_file(search_input, monster, drops_with_ids, file_path.rsplit('.', 1)[0], args.txt, args.id, args.sort, False)
+                    
+                    if not args.id and not args.banklayout:
+                        drops_table = create_drops_table(drops_with_ids)
+                        update_layout(layout, search_input, monsters, console.height, completed_steps, monster, drops_table, progress_bars=(monster_progress, drop_progress))
+                    drop_progress.update(drop_task, advance=1)
+                    live.refresh()
                 
-                if not args.id and not args.banklayout:
-                    drops_table = create_drops_table(drops_with_ids)
-                    update_layout(layout, search_input, monsters, console.height, completed_steps, monster, drops_table, progress_bars=(monster_progress, drop_progress))
-                drop_progress.update(drop_task, advance=1)
-                live.refresh()
-            
-            if monster_not_found:
-                retry = console.input("[yellow]Would you like to try again? (y/n): [/yellow]").lower()
-                if retry != 'y':
-                    return
-                continue
+                if monster_not_found:
+                    search_input = get_input(console, search_type)
+                    continue
+                
+                break  # Exit the loop if everything was successful
 
             if args.banklayout:
                 save_banklayout(search_input, all_unique_ids, file_path.rsplit('.', 1)[0], args.sort)
