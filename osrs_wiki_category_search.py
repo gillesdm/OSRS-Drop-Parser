@@ -2,7 +2,7 @@ from rich.console import Console
 from rich.live import Live
 from rich.panel import Panel
 from components.wiki_api import get_category_members, get_monster_drops, is_monster
-from components.item_database import load_item_database, get_item_id
+from components.item_database import load_item_database, get_item_id, save_item_database
 from components.file_operations import save_drops_to_file, create_output_file
 from components.ui import (
     create_header, create_layout, update_monsters_panel,
@@ -25,6 +25,13 @@ def main():
     category = get_category_input(console)
     
     item_db = load_item_database()
+    
+    # Ask if the user wants to save the item database
+    save_db = console.input("[bold yellow]Do you want to save the item database? (y/n): [/bold yellow]").lower() == 'y'
+    if save_db:
+        db_file_path = console.input("[bold yellow]Enter the file path to save the item database (e.g., item_database.json): [/bold yellow]")
+        save_item_database(item_db, db_file_path)
+        console.print(f"[green]Item database saved to {db_file_path}[/green]")
     all_entries = get_category_members(category)
     monsters = [entry for entry in all_entries if is_monster(entry)]
     

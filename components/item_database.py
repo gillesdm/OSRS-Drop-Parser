@@ -21,3 +21,10 @@ def get_item_id(item_name, item_db):
                 return int(item_id)
     
     return None
+
+def save_item_database(item_db, file_path):
+    """
+    Save the item database to a JSON file.
+    """
+    with open(file_path, 'w') as f:
+        json.dump(item_db, f, indent=2)
