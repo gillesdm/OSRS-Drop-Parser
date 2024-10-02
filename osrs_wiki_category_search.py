@@ -191,11 +191,8 @@ def main():
     
     layout["title"].update(create_header())
     
-    monsters_table = Table(title="Monsters", box=DOUBLE, border_style="blue", header_style="bold blue")
-    monsters_table.add_column("Monster", style="magenta")
-    for monster in monsters:
-        monsters_table.add_row(monster)
-    layout["monsters"].update(Panel(monsters_table, title="Monsters", border_style="blue"))
+    monsters_list = "\n".join(monsters)
+    layout["monsters"].update(Panel(monsters_list, title="Monsters", border_style="blue"))
     
     progress_monsters = Progress(
         TextColumn("[progress.description]{task.description}"),
