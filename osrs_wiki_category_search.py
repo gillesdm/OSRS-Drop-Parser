@@ -1,6 +1,7 @@
 import requests
 import re
 import os
+import json
 from bs4 import BeautifulSoup
 
 def get_category_members(category_name):
@@ -35,27 +36,56 @@ def get_category_members(category_name):
 
 def get_monster_drops(monster_name, save_to_file=False):
     """
-    Fetch all drop tables for a given monster from the OSRS Wiki.
+    Fetch all drop tables for a given monster from the OSRS Wiki using the API.
     If save_to_file is True, the drop table will be saved to a local file.
     """
-    base_url = "https://oldschool.runescape.wiki/w/"
+    base_url = "https://oldschool.runescape.wiki/api.php"
     
-    response = requests.get(base_url + monster_name.replace(' ', '_'))
+    params = {
+        "action": "parse",
+        "page": monster_name,
+        "format": "json",
+        "prop": "text",
+        "contentmodel": "wikitext"
+    }
+    
+    response = requests.get(base_url, params=params)
     
     if response.status_code != 200:
+        print(f"Failed to fetch data for {monster_name}")
         return []
     
-    soup = BeautifulSoup(response.content, 'html.parser')
+    data = response.json()
     
-    drops_tables = soup.find_all('table', class_='item-drops')
+    if 'error' in data:
+        print(f"Error fetching data for {monster_name}: {data['error']['info']}")
+        return []
+    
+    html_content = data['parse']['text']['*']
+    soup = BeautifulSoup(html_content, 'html.parser')
     
     drops = []
+    drops_tables = soup.find_all('table', class_='item-drops')
+    
     for table in drops_tables:
         for row in table.find_all('tr')[1:]:  # Skip header row
             item_cell = row.find('td', class_='item-drop-name')
             if item_cell:
-                item_name = item_cell.text.strip()
-                drops.append(item_name)
+                item_name = item_cell.find('a')
+                if item_name:
+                    item_name = item_name.text.strip()
+                    drops.append(item_name)
+    
+    if not drops:
+        # Try to find drops in the infobox
+        infobox = soup.find('table', class_='infobox')
+        if infobox:
+            drops_row = infobox.find('th', string='Drops')
+            if drops_row:
+                drops_cell = drops_row.find_next_sibling('td')
+                if drops_cell:
+                    for item in drops_cell.find_all('a'):
+                        drops.append(item.text.strip())
     
     if save_to_file:
         save_drops_to_file(monster_name, drops)
@@ -86,7 +116,7 @@ def main():
         print(f"- {monster}")
         drops = get_monster_drops(monster, save_to_file=True)
         if drops:
-            print("  Drops:")
+            print(f"  Drops ({len(drops)} items):")
             for drop in drops:
                 print(f"    - {drop}")
         else:
