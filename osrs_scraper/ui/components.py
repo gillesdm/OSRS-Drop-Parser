@@ -10,7 +10,12 @@ from rich.console import Group
 from rich.padding import Padding
 from art import text2art
 from prompt_toolkit import prompt
-from prompt_toolkit.shortcuts import radiolist_dialog
+from prompt_toolkit.shortcuts import PromptSession
+from prompt_toolkit.application import Application
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.layout.containers import Window
+from prompt_toolkit.layout.controls import FormattedTextControl
+from prompt_toolkit.layout import Layout
 
 def create_welcome_screen(console: Console) -> Panel:
     welcome_text = Text()
@@ -23,16 +28,43 @@ def create_welcome_screen(console: Console) -> Panel:
     return Panel(welcome_text, title="Welcome", border_style="bold blue", expand=True, height=console.height)
 
 def get_search_type() -> str:
-    result = radiolist_dialog(
-        title="Search Type",
-        text="Choose whether to search by category or monster:",
-        values=[
-            ("category", "Search by Category"),
-            ("monster", "Search by Monster"),
-        ],
-    ).run()
-    
-    return result
+    options = ["Search by Category", "Search by Monster"]
+    selected = 0
+
+    def get_formatted_text():
+        result = []
+        for i, option in enumerate(options):
+            if i == selected:
+                result.append(("class:selected", f">> {option}"))
+            else:
+                result.append(("", f"   {option}"))
+            result.append(("", "\n"))
+        return result
+
+    kb = KeyBindings()
+
+    @kb.add("up")
+    def _(event):
+        nonlocal selected
+        selected = (selected - 1) % len(options)
+
+    @kb.add("down")
+    def _(event):
+        nonlocal selected
+        selected = (selected + 1) % len(options)
+
+    @kb.add("enter")
+    def _(event):
+        event.app.exit(result=options[selected])
+
+    application = Application(
+        layout=Layout(Window(FormattedTextControl(get_formatted_text))),
+        key_bindings=kb,
+        full_screen=True,
+    )
+
+    result = application.run()
+    return "category" if result == "Search by Category" else "monster"
 
 def get_input(console: Console, input_type: str) -> str:
     input_text = Text()
