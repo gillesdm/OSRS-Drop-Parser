@@ -5,7 +5,7 @@ import json
 from datetime import datetime
 from bs4 import BeautifulSoup
 import mwparserfromhell
-from rich.console import Console
+from rich.console import Console, Group
 from rich.live import Live
 from rich.panel import Panel
 from rich.text import Text
@@ -13,7 +13,7 @@ from rich.table import Table
 from rich.box import DOUBLE
 from rich.style import Style
 from rich.layout import Layout
-from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn, Group
+from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn
 
 # Load the item database
 with open('assets/item-db.json', 'r') as f:
@@ -191,8 +191,15 @@ def main():
     
     layout["title"].update(create_header())
     
+    console_height = console.height
     monsters_list = Text("\n".join(monsters))
-    layout["monsters"].update(Panel(monsters_list, title="Monsters", border_style="blue"))
+    monsters_panel = Panel(
+        Group(monsters_list),
+        title="Monsters",
+        border_style="blue",
+        height=console_height - 15  # Adjust this value to fit your layout
+    )
+    layout["monsters"].update(monsters_panel)
     
     progress_monsters = Progress(
         TextColumn("[progress.description]{task.description}"),
@@ -230,7 +237,11 @@ def main():
             monster_index = monsters_list.plain.index(monster)
             monsters_list = Text("\n".join(["✓ " + m if m == monster else m for m in monsters_list.plain.split("\n")]))
             monsters_list.stylize(f"green", start=monster_index, end=monster_index + len(monster) + 2)  # +2 for "✓ "
-            layout["monsters"].update(Panel(monsters_list, title="Monsters", border_style="blue"))
+            
+            # Auto-scroll the monsters list
+            scroll_index = max(0, monster_index - (console_height - 20))  # Adjust this value to fit your layout
+            monsters_panel.renderable = Group(monsters_list[scroll_index:])
+            layout["monsters"].update(monsters_panel)
             
             drops_table = Table(title="Drop Table", box=DOUBLE, border_style="yellow", header_style="bold yellow")
             drops_table.add_column("Item", style="green")
