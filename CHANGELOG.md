@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2023-05-07
+
+### Added
+- New feature to save drop tables in CSV format
+- Option to perform multiple searches in a single session
+- Improved summary message at the end of each search
+
+### Changed
+- Enhanced user interface with clearer prompts and feedback
+- Updated main loop to support multiple searches
+
 ## [0.2.0] - 2023-04-30
 
 ### Added
