@@ -102,19 +102,12 @@ def update_monsters_panel(monsters_list, console_height, layout):
         expand=True
     )
 
-def create_progress_bars():
-    progress_monsters = Progress(
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        TextColumn("[progress.completed]{task.completed:>3}/{task.total}"),
-        TimeRemainingColumn()
-    )
-    progress_drops = Progress(
+def create_progress_bar():
+    return Progress(
         TextColumn("[progress.description]{task.description}"),
         BarColumn(),
         TextColumn("[progress.completed]{task.completed:>3}/{task.total}")
     )
-    return progress_monsters, progress_drops
 
 def create_drops_table(drops):
     drops_table = Table(title="Drop Table", box=DOUBLE, border_style="yellow", header_style="bold yellow")

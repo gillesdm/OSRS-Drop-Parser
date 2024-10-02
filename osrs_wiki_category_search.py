@@ -46,29 +46,22 @@ def main():
     monsters_panel = update_monsters_panel("", console_height, layout)
     layout["monsters"].update(monsters_panel)
     
-    progress_monsters, progress_drops = create_progress_bars()
+    progress_drops = create_progress_bar()
     
-    layout["monster_progress"].update(Panel(progress_monsters, title="Monster Progress", border_style="cyan"))
     layout["drop_progress"].update(Panel(progress_drops, title="Drop Table Progress", border_style="yellow"))
     
     file_path = create_output_file(category)
     
     with Live(layout, console=console, screen=True, refresh_per_second=4) as live:
         monsters = []
-        progress_check = Progress(
-            TextColumn("[progress.description]{task.description}"),
-            BarColumn(),
-            TextColumn("[progress.percentage]{task.percentage:>3.0f}%")
-        )
+        total_entries = len(all_entries)
         
-        with progress_check:
-            check_task = progress_check.add_task("[cyan]Checking for monsters...", total=len(all_entries))
-            for entry in all_entries:
-                if is_monster(entry):
-                    monsters.append(entry)
-                progress_check.update(check_task, advance=1)
-                layout["monster_search"].update(Panel(progress_check, title="Monster Search", border_style="cyan"))
-                live.refresh()
+        for i, entry in enumerate(all_entries, 1):
+            if is_monster(entry):
+                monsters.append(entry)
+            progress_percentage = (i / total_entries) * 100
+            layout["monster_search"].update(Panel(f"Checking for monsters... {progress_percentage:.1f}%", title="Monster Search", border_style="cyan"))
+            live.refresh()
         
         if args.logs:
             log_parsed_data(category, "filtered_monsters", monsters)
@@ -78,14 +71,14 @@ def main():
             live.refresh()
             return
         
+        layout["monster_search"].update(Panel(f"Found {len(monsters)} monsters", title="Monster Search", border_style="cyan"))
         monsters_list = "\n".join(monsters)
         monsters_panel = update_monsters_panel(monsters_list, console_height, layout)
         layout["monsters"].update(monsters_panel)
         
-        task_monsters = progress_monsters.add_task("[cyan]Processing monsters", total=len(monsters))
-        task_drops = progress_drops.add_task("[yellow]Fetching drops", total=100)  # We'll update this later
+        task_drops = progress_drops.add_task("[yellow]Fetching drops", total=len(monsters))
         
-        for i, monster in enumerate(monsters, 1):
+        for monster in monsters:
             progress_drops.update(task_drops, completed=0, description=f"[yellow]Fetching drops for {monster}")
             drops = get_monster_drops(monster)
             drops_with_ids = [(item, get_item_id(item, item_db)) for item in drops if item.lower() != "nothing"]
