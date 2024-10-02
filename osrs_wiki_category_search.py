@@ -57,8 +57,17 @@ def get_monster_drops(monster_name):
     drops = []
     for template in parsed.filter_templates():
         if template.name.matches('DropsLine'):
-            item = str(template.get('Item').value).strip()
-            drops.append(item)
+            try:
+                item = str(template.get('Item').value).strip()
+                drops.append(item)
+            except ValueError:
+                # If 'Item' is not found, try 'Name'
+                try:
+                    item = str(template.get('Name').value).strip()
+                    drops.append(item)
+                except ValueError:
+                    # If neither 'Item' nor 'Name' is found, skip this template
+                    continue
     
     return drops
 
