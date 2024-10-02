@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 from typing import List, Tuple, Optional
 
-def save_drops_to_file(category: str, monster_name: str, drops: List[Tuple[str, Optional[int]]], file_path: str, txt_output: bool = False, id_only: bool = False) -> None:
+def save_drops_to_file(category: str, monster_name: str, drops: List[Tuple[str, Optional[int]]], file_path: str, txt_output: bool = False, id_only: bool = False, sort_ids: bool = False) -> None:
     """Save the drop table for a given monster to a single file for the category."""
     # Save to JSON (always)
     json_file_path = file_path.rsplit('.', 1)[0] + '.json'
@@ -40,6 +40,8 @@ def save_drops_to_file(category: str, monster_name: str, drops: List[Tuple[str, 
         id_file_path = file_path.rsplit('.', 1)[0] + '_ids.txt'
         with open(id_file_path, "a") as id_file:
             unique_ids = set(item_id for _, item_id in drops if item_id is not None)
+            if sort_ids:
+                unique_ids = sorted(unique_ids)
             id_file.write(','.join(map(str, unique_ids)) + '\n')
 
 def create_output_file(category: str) -> str:

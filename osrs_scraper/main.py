@@ -52,6 +52,11 @@ def main():
         action="store_true",
         help="Output only item IDs as a comma-separated list in a txt file"
     )
+    parser.add_argument(
+        "--sort",
+        action="store_true",
+        help="Sort the item IDs from small to large (only applicable with --id)"
+    )
     
     # Add a more detailed description
     parser.description = """
@@ -71,6 +76,7 @@ This script allows you to:
 Use the --logs option to enable detailed logging for debugging.
 Use the --txt option to save drop tables in both JSON and TXT formats.
 Use the --id option to save only item IDs as a comma-separated list in a txt file.
+Use the --sort option with --id to sort the item IDs from small to large.
     """
     
     args = parser.parse_args()
@@ -147,7 +153,7 @@ Use the --id option to save only item IDs as a comma-separated list in a txt fil
         for monster in monsters:
             drops = get_monster_drops(monster)
             drops_with_ids = [(item, get_item_id(item, item_db)) for item in drops if item.lower() != "nothing"]
-            save_drops_to_file(category, monster, drops_with_ids, file_path.rsplit('.', 1)[0], args.txt, args.id)
+            save_drops_to_file(category, monster, drops_with_ids, file_path.rsplit('.', 1)[0], args.txt, args.id, args.sort)
             
             if not args.id:
                 drops_table = create_drops_table(drops_with_ids)
