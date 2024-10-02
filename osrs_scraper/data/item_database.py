@@ -1,9 +1,17 @@
 import json
+import os
 from typing import Dict, Optional
 
 def load_item_database(file_path: str = 'assets/item-db.json') -> Dict[str, Dict]:
-    with open(file_path, 'r') as f:
-        return json.load(f)
+    try:
+        with open(file_path, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print(f"Error: The file '{file_path}' was not found.")
+        print("Please make sure the item database file exists in the correct location.")
+        print(f"Current working directory: {os.getcwd()}")
+        print("You may need to download or create the item database file.")
+        return {}
 
 def get_item_id(item_name: str, item_db: Dict[str, Dict]) -> Optional[int]:
     """

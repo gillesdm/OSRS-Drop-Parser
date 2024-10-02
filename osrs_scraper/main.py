@@ -41,6 +41,11 @@ def main():
     
     category = get_category_input(console)
     item_db = load_item_database()
+    if not item_db:
+        console.print("[bold red]Warning: Item database is empty. Item IDs will not be available.[/bold red]")
+        console.print("Press Enter to continue anyway, or Ctrl+C to exit.")
+        console.input()
+
     all_entries = get_category_members(category)
     
     layout = create_layout()
