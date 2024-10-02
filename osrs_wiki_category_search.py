@@ -8,7 +8,7 @@ from components.item_database import load_item_database, get_item_id
 from components.file_operations import save_drops_to_file, create_output_file
 from components.ui import (
     create_header, create_layout, update_monsters_panel,
-    create_progress_bars, create_drops_table, create_welcome_screen,
+    create_progress_bar, create_drops_table, create_welcome_screen,
     get_category_input, create_monster_search_panel
 )
 from components.logging_utils import log_parsed_data, set_logging
@@ -95,7 +95,6 @@ def main():
             drops_table = create_drops_table(drops_with_ids)
             
             layout["drops"].update(Panel(drops_table, title=f"Drops for {monster}", border_style="yellow"))
-            progress_monsters.update(task_monsters, advance=1)
             live.refresh()
     
     console.print(f"\n[green]Drop tables for all monsters in category '{category}' have been saved to {file_path}")
